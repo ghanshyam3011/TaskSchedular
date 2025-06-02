@@ -1,0 +1,9 @@
+{
+    "smtp": {
+        "host": "smtp.gmail.com",
+        "port": "587",
+        "username": "ghanshyamthacker07@gmail.com",
+        "password": "dlnf gmto sjfc dvju",
+        "from": "ghanshyamthacker07@gmail.com"
+    }
+} 
