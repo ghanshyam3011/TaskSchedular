@@ -1166,5 +1166,69 @@
   {
     "command": "list",
     "timestamp": "2025-06-02 12:27"
+  },
+  {
+    "command": "list",
+    "timestamp": "2025-06-03 18:43"
+  },
+  {
+    "command": "hel",
+    "timestamp": "2025-06-03 18:43"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-03 18:43"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-03 18:47"
+  },
+  {
+    "command": "exit ",
+    "timestamp": "2025-06-03 18:48"
+  },
+  {
+    "command": "list",
+    "timestamp": "2025-06-03 18:48"
+  },
+  {
+    "command": "list overdue ",
+    "timestamp": "2025-06-03 18:48"
+  },
+  {
+    "command": "list overdue",
+    "timestamp": "2025-06-03 18:48"
+  },
+  {
+    "command": "list upcoming",
+    "timestamp": "2025-06-03 18:48"
+  },
+  {
+    "command": "add kabs due 2025-05-4 22:00 ",
+    "timestamp": "2025-06-03 18:57"
+  },
+  {
+    "command": "add kabs at 2025-05-4 22:00",
+    "timestamp": "2025-06-03 18:57"
+  },
+  {
+    "command": "add kabs at 2025-05-04 22:00",
+    "timestamp": "2025-06-03 18:57"
+  },
+  {
+    "command": "add kabs at 2025-06-04 22:00",
+    "timestamp": "2025-06-03 18:57"
+  },
+  {
+    "command": "list upcoming",
+    "timestamp": "2025-06-03 18:57"
+  },
+  {
+    "command": "complete 39",
+    "timestamp": "2025-06-03 18:58"
+  },
+  {
+    "command": "list",
+    "timestamp": "2025-06-03 18:58"
   }
 ]

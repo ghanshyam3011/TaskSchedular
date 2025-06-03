@@ -5,6 +5,7 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
 release.properties
+dependency-reduced-pom.xml
 
 # IDE files
 .idea/
@@ -17,9 +18,25 @@ release.properties
 # Compiled files
 *.class
 bin/
+temp_classes/
 
 # Logs
 *.log
+scheduler_log.txt
+task_checker_log.txt
+task_checker_output.log
+
+# Test files
+*_test_result.txt
+*_test_success.txt
+*test.txt
+*success.txt
+output.txt
+background_task_test.txt
+background_test_result.txt
+service_test.txt
+timing_test_result.txt
+tascSaved*
 
 # Package files
 *.jar
@@ -28,4 +45,8 @@ bin/
 *.ear
 *.zip
 *.tar.gz
-*.rar 
+*.rar
+
+# Keep the task output directory but not its contents
+task_outputs/*
+!task_outputs/.gitkeep 
