@@ -3,11 +3,11 @@ REM Background Task Checker for TaskSchedular
 REM This script runs every few minutes to check for and execute due tasks
 
 REM Set environment variables for email notifications
-set EMAIL_USERNAME=ghanshyamthacker07@gmail.com
-set EMAIL_PASSWORD=ghjw qxgt jofk jklx
+set EMAIL_USERNAME=your.email@example.com
+set EMAIL_PASSWORD=your-app-password-here
 
 REM Change to the application directory
-cd /d "d:\tascSaved\TaskSchedular-main"
+cd /d "%~dp0"
 
 REM Log the start of execution
 echo Starting task checker at %date% %time% > task_checker_log.txt

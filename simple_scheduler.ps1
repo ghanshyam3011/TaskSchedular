@@ -1,6 +1,6 @@
 Write-Host "Starting Task Scheduler..."
 
-$appDirectory = "d:\tascSaved\TaskSchedular-main"
+$appDirectory = $PSScriptRoot
 Set-Location $appDirectory
 
 $logFile = Join-Path $appDirectory "scheduler_log.txt"

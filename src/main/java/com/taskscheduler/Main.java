@@ -1,13 +1,44 @@
-package com.taskscheduler;
 
+package com.taskscheduler;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
+    
+    /**
+     * Suppresses console logging for all Java logger
+     */
+    private static void suppressConsoleLogging() {
+        // Set the root logger's level to suppress most logs
+        Logger rootLogger = Logger.getLogger("");
+        rootLogger.setLevel(Level.SEVERE);
+        
+        // Also remove console handlers to ensure no logs appear
+        for (Handler handler : rootLogger.getHandlers()) {
+            if (handler instanceof ConsoleHandler) {
+                handler.setLevel(Level.SEVERE);
+            }
+        }
+        
+        // Specifically suppress other loggers we know about
+        Logger.getLogger(QuartzScheduler.class.getName()).setLevel(Level.SEVERE);
+        Logger.getLogger(TaskJob.class.getName()).setLevel(Level.SEVERE);
+        Logger.getLogger(TaskManager.class.getName()).setLevel(Level.SEVERE);
+    }
 
     public static void main(String[] args) {
         try {
+            // Set default logging level based on execution mode
+            boolean isDebugMode = System.getProperty("debug") != null;
+            boolean isBackgroundMode = args.length > 0 && args[0].contains("--check-tasks");
+            
+            // Suppress console logs in interactive mode unless debug is enabled
+            if (!isDebugMode && !isBackgroundMode) {
+                suppressConsoleLogging();
+            }
+            
             // Log arguments for debugging
             logger.info("***DEBUG*** Application started with " + args.length + " arguments");
             if (args.length > 0) {
