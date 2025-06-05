@@ -1,36 +1,34 @@
 package com.taskscheduler;
 
-import java.util.Scanner;
-import java.util.Date;
+import java.io.File;
+import java.io.IOException;
+import java.time.DateTimeException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
-import java.time.DateTimeException;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.List;
-import java.util.ArrayList;
-import java.time.Duration;
-import java.io.IOException;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.jline.reader.impl.completer.ArgumentCompleter;
-import org.jline.reader.impl.completer.StringsCompleter;
-import java.io.File;
-import java.util.HashSet;
+
+import com.taskscheduler.nlp.NLPProcessor;
+import com.taskscheduler.nlp.NLPProcessor.ProcessedCommand;
 
 public class CommandHandler {
+    private static final Logger logger = Logger.getLogger(CommandHandler.class.getName());
     private final TaskManager taskManager;
     private final ReminderManager reminderManager;
     private final CommandLogger commandLogger;
     private final CommandPatternAnalyzer patternAnalyzer;
     private final LineReader reader;
+    private final NLPProcessor nlpProcessor;
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
         DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"),
@@ -51,6 +49,7 @@ public class CommandHandler {
         this.reminderManager = new ReminderManager(taskManager);
         this.commandLogger = new CommandLogger();
         this.patternAnalyzer = new CommandPatternAnalyzer(commandLogger);
+        this.nlpProcessor = new NLPProcessor();
         
         try {
             Terminal terminal = TerminalBuilder.builder()
@@ -101,8 +100,12 @@ public class CommandHandler {
                     System.exit(0);
                 }
                 handleCommands(command);
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number format: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid input: " + e.getMessage());
+            } catch (RuntimeException e) {
+                System.out.println("Runtime error: " + e.getMessage());
             }
         }
     }
@@ -117,6 +120,55 @@ public class CommandHandler {
         // Log the command before handling it
         commandLogger.logCommand(command);
 
+        try {
+            // Try to process as natural language first
+            ProcessedCommand processedCommand = nlpProcessor.processInput(command);
+            if (processedCommand != null) {
+                // If successful, print what we understood and execute the converted command
+                logger.info(() -> "Processed natural language input: " + processedCommand.toString());
+                String formattedCmd = processedCommand.getFormattedCommand();
+                System.out.println("✓ I understood: \"" + formattedCmd + "\"");
+                System.out.println("[DEBUG] Command format: " + formattedCmd);
+                
+                // Execute the processed command without reprocessing
+                handleFormattedCommand(formattedCmd);
+                return;
+            }
+            
+            // If NLP processing didn't work, handle as regular command
+            executeCommand(command);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Handles a formatted command without attempting to process it as natural language again
+     */
+    private void handleFormattedCommand(String formattedCommand) {
+        try {
+            executeCommand(formattedCommand);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Error executing command: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unexpected error executing command: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Executes a command after it has been processed
+     */
+    private void executeCommand(String command) {
         try {
             if (command.equalsIgnoreCase("help")) {
                 showHelp();
@@ -187,12 +239,16 @@ public class CommandHandler {
                 String timeStr = parts[1].toLowerCase();
                 setReminderTime(taskId, timeStr);
             } else {
-                showHelp();
+                System.out.println("Unknown command. Type 'help' for available commands.");
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid task ID. Please enter a valid number.");
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid argument: " + e.getMessage());
+        } catch (DateTimeException e) {
+            System.out.println("Date error: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Runtime error: " + e.getMessage());
         }
     }
 
@@ -269,53 +325,7 @@ public class CommandHandler {
         System.out.println("Task not found.");
     }
 
-    private LocalDateTime parseTimeFromTitle(String title) {
-        try {
-            // First try to find a date in the title
-            String[] words = title.toLowerCase().split("\\s+");
-            for (int i = 0; i < words.length - 1; i++) {
-                if (words[i].equals("at") || words[i].equals("on")) {
-                    String dateStr = words[i + 1];
-                    // Try each formatter
-                    for (DateTimeFormatter formatter : DATE_FORMATTERS) {
-                        try {
-                            return LocalDateTime.parse(dateStr, formatter);
-                        } catch (DateTimeParseException e) {
-                            // Continue to next formatter
-                        }
-                    }
-                }
-            }
 
-            // If no date found, try to find time in format like "at 2pm", "at 2:30pm", etc.
-            for (int i = 0; i < words.length - 1; i++) {
-                if (words[i].equals("at")) {
-                    String timeStr = words[i + 1];
-                    LocalDateTime now = LocalDateTime.now();
-                    
-                    // Handle 12-hour format with AM/PM
-                    if (timeStr.matches("\\d{1,2}(?::\\d{2})?(?:am|pm)")) {
-                        boolean isPM = timeStr.toLowerCase().endsWith("pm");
-                        timeStr = timeStr.toLowerCase().replaceAll("(am|pm)", "").trim();
-                        
-                        String[] timeParts = timeStr.split(":");
-                        int hour = Integer.parseInt(timeParts[0]);
-                        int minute = timeParts.length > 1 ? Integer.parseInt(timeParts[1]) : 0;
-                        
-                        // Convert to 24-hour format
-                        if (isPM && hour < 12) hour += 12;
-                        if (!isPM && hour == 12) hour = 0;
-                        
-                        return LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), hour, minute);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            // If any error occurs during parsing, return null (no time set)
-            return null;
-        }
-        return null;
-    }
 
     private void completeTask(int taskId) {
         taskManager.completeTask(taskId);
@@ -323,7 +333,6 @@ public class CommandHandler {
 
     private void setDueDate(int taskId, String dueDateStr) {
         LocalDateTime dueDate = null;
-        DateTimeParseException lastException = null;
 
         // Try each formatter until one works
         for (DateTimeFormatter formatter : DATE_FORMATTERS) {
@@ -333,7 +342,7 @@ public class CommandHandler {
                 validateDate(dueDate);
                 break;
             } catch (DateTimeParseException e) {
-                lastException = e;
+                // Continue with next formatter
             } catch (DateTimeException e) {
                 System.out.println("Invalid date: " + e.getMessage());
                 return;
@@ -483,20 +492,48 @@ public class CommandHandler {
 
     private void handleAddTask(String taskTitle, String[] parts) {
         try {
-            // Extract title and time
-            String[] titleParts = taskTitle.split(" at ", 2);
-            if (titleParts.length != 2) {
+            // Extract title and time/date
+            String title;
+            String timeOrDate;
+            
+            // Check if this is a "due" format or "at" format
+            if (taskTitle.contains(" due ")) {
+                String[] dueParts = taskTitle.split(" due ", 2);
+                if (dueParts.length != 2) {
+                    System.out.println("Invalid format. Use: add \"Task Title\" due yyyy-MM-dd HH:mm [options]");
+                    return;
+                }
+                title = dueParts[0];
+                timeOrDate = dueParts[1];
+            } else if (taskTitle.contains(" at ")) {
+                String[] atParts = taskTitle.split(" at ", 2);
+                if (atParts.length != 2) {
+                    System.out.println("Invalid format. Use: add \"Task Title\" at HH:mm [options]");
+                    return;
+                }
+                title = atParts[0];
+                timeOrDate = atParts[1];
+            } else {
                 System.out.println("Invalid format. Use: add \"Task Title\" at HH:mm [options]");
                 return;
             }
 
-            String title = titleParts[0].trim();
             if (title.startsWith("\"") && title.endsWith("\"")) {
                 title = title.substring(1, title.length() - 1);
             }
 
-            String timeStr = titleParts[1].trim();
-            LocalDateTime dueDate = parseDate(timeStr);
+            LocalDateTime dueDate;
+            try {
+                dueDate = parseDate(timeOrDate);
+            } catch (DateTimeParseException e) {
+                // If timeOrDate is just a time (HH:mm), add today's date
+                if (timeOrDate.matches("\\d{1,2}:\\d{2}")) {
+                    String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    dueDate = parseDate(today + " " + timeOrDate);
+                } else {
+                    throw e;
+                }
+            }
             validateDate(dueDate);
 
             Task task = new Task(0, title, false, dueDate);
@@ -549,7 +586,13 @@ public class CommandHandler {
             System.out.println("Added task: \"" + title + "\"");
         } catch (DateTimeParseException e) {
             System.out.println("Invalid date/time format. Use: yyyy-MM-dd HH:mm or HH:mm");
-        } catch (Exception e) {
+        } catch (DateTimeException e) {
+            System.out.println("Date error: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid argument: " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("Error adding task: " + e.getMessage());
         }
     }

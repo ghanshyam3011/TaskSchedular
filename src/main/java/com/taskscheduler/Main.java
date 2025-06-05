@@ -15,10 +15,15 @@ public class Main {
         Logger rootLogger = Logger.getLogger("");
         rootLogger.setLevel(Level.SEVERE);
         
+        // Install a filter on the root logger to block all Natty logs
+        rootLogger.setFilter(new com.taskscheduler.util.NattyLoggingFilter());
+        
         // Also remove console handlers to ensure no logs appear
         for (Handler handler : rootLogger.getHandlers()) {
             if (handler instanceof ConsoleHandler) {
                 handler.setLevel(Level.SEVERE);
+                // Apply filter to each handler too
+                handler.setFilter(new com.taskscheduler.util.NattyLoggingFilter());
             }
         }
         
@@ -26,6 +31,32 @@ public class Main {
         Logger.getLogger(QuartzScheduler.class.getName()).setLevel(Level.SEVERE);
         Logger.getLogger(TaskJob.class.getName()).setLevel(Level.SEVERE);
         Logger.getLogger(TaskManager.class.getName()).setLevel(Level.SEVERE);
+        
+        // Completely disable Natty parser logging
+        Logger nattyParser = Logger.getLogger("com.joestelmach.natty.Parser");
+        nattyParser.setLevel(Level.OFF);
+        nattyParser.setUseParentHandlers(false);
+        for (Handler h : nattyParser.getHandlers()) {
+            nattyParser.removeHandler(h);
+        }
+        
+        // Suppress all related loggers too
+        silenceLogger("com.joestelmach");
+        silenceLogger("com.joestelmach.natty");
+        silenceLogger("net.objectlab");
+        silenceLogger("org.antlr");
+    }
+    
+    /**
+     * Helper method to completely silence a logger by name
+     */
+    private static void silenceLogger(String name) {
+        Logger logger = Logger.getLogger(name);
+        logger.setLevel(Level.OFF);
+        logger.setUseParentHandlers(false);
+        for (Handler h : logger.getHandlers()) {
+            logger.removeHandler(h);
+        }
     }
 
     public static void main(String[] args) {
