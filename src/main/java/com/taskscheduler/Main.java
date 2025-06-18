@@ -6,100 +6,127 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
-    
-    /**
+      /**
      * Suppresses console logging for all Java logger
      */
     private static void suppressConsoleLogging() {
-        // Set the root logger's level to suppress most logs
-        Logger rootLogger = Logger.getLogger("");
-        rootLogger.setLevel(Level.SEVERE);
-        
-        // Also remove console handlers to ensure no logs appear
-        for (Handler handler : rootLogger.getHandlers()) {
-            if (handler instanceof ConsoleHandler) {
-                handler.setLevel(Level.SEVERE);
-            }
-        }
-        
-        // Specifically suppress other loggers we know about
-        Logger.getLogger(QuartzScheduler.class.getName()).setLevel(Level.SEVERE);
-        Logger.getLogger(TaskJob.class.getName()).setLevel(Level.SEVERE);
-        Logger.getLogger(TaskManager.class.getName()).setLevel(Level.SEVERE);
-    }
-
-    public static void main(String[] args) {
         try {
+            // First, try to load logging properties from file
+            try {
+                // This will override JVM logging settings with our custom settings
+                System.setProperty("java.util.logging.config.file", "natty-logging.properties");
+                java.util.logging.LogManager.getLogManager().readConfiguration(); 
+            } catch (Exception e) {
+                System.out.println("Warning: Could not load custom logging properties file.");
+            }
+            
+            // Set the root logger's level to suppress most logs
+            Logger rootLogger = Logger.getLogger("");
+            rootLogger.setLevel(Level.SEVERE);
+            
+            // Install a filter on the root logger to block all Natty logs
+            rootLogger.setFilter(new com.taskscheduler.util.NattyLoggingFilter());
+            
+            // Also remove console handlers to ensure no logs appear
+            for (Handler handler : rootLogger.getHandlers()) {
+                if (handler instanceof ConsoleHandler) {
+                    handler.setLevel(Level.SEVERE);
+                    // Apply filter to each handler too
+                    handler.setFilter(new com.taskscheduler.util.NattyLoggingFilter());
+                }
+            }
+            
+            // Specifically suppress other loggers we know about
+            Logger.getLogger(QuartzScheduler.class.getName()).setLevel(Level.SEVERE);
+            Logger.getLogger(TaskJob.class.getName()).setLevel(Level.SEVERE);
+            Logger.getLogger(TaskManager.class.getName()).setLevel(Level.SEVERE);
+            
+            // Completely disable Natty parser logging - use more aggressive approach
+            Logger nattyParser = Logger.getLogger("com.joestelmach.natty.Parser");
+            nattyParser.setLevel(Level.OFF);
+            nattyParser.setUseParentHandlers(false);
+            for (Handler h : nattyParser.getHandlers()) {
+                nattyParser.removeHandler(h);
+            }
+            
+            // For even more thorough suppression, add a do-nothing handler
+            nattyParser.addHandler(new ConsoleHandler() {
+                @Override
+                public void publish(java.util.logging.LogRecord record) {
+                    // Do nothing - suppress all output
+                }
+                
+                @Override
+                public void flush() {}
+                
+                @Override
+                public void close() {}
+            });
+            
+            // Suppress all related loggers too - more aggressively
+            silenceLogger("com.joestelmach");
+            silenceLogger("com.joestelmach.natty");
+            silenceLogger("net.objectlab");
+            silenceLogger("org.antlr");
+            silenceLogger("org.quartz");
+        } catch (Exception e) {
+            System.out.println("Warning: Error occurred while configuring logging: " + e);
+        }
+    }
+    
+    /**
+     * Helper method to completely silence a logger by name
+     */
+    private static void silenceLogger(String name) {
+        Logger logger = Logger.getLogger(name);
+        logger.setLevel(Level.OFF);
+        logger.setUseParentHandlers(false);
+        for (Handler h : logger.getHandlers()) {
+            logger.removeHandler(h);
+        }
+    }    public static void main(String[] args) {
+        // Set SLF4J system properties to suppress Quartz logging BEFORE any logging initialization
+        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "error");
+        System.setProperty("org.slf4j.simpleLogger.log.org.quartz", "error");
+        System.setProperty("org.slf4j.simpleLogger.log.org.quartz.core", "error");
+        System.setProperty("org.slf4j.simpleLogger.log.org.quartz.impl", "error");
+        System.setProperty("org.slf4j.simpleLogger.log.org.quartz.simpl", "error");
+        System.setProperty("org.slf4j.simpleLogger.showDateTime", "false");
+        System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
+        System.setProperty("org.slf4j.simpleLogger.showLogName", "false");
+        
+        try {
+            // Check if running in background mode first
+            boolean isBackgroundMode = false;
+            if (args.length > 0) {
+                String firstArg = args[0].trim();
+                
+                // Remove any quotes that might be included
+                if (firstArg.startsWith("\"") && firstArg.endsWith("\"")) {
+                    firstArg = firstArg.substring(1, firstArg.length() - 1);
+                }
+                
+                // Check for background mode parameter
+                if (firstArg.equals("--check-tasks") || 
+                    firstArg.equalsIgnoreCase("--check-tasks") ||
+                    firstArg.contains("--check-tasks")) {
+                    
+                    isBackgroundMode = true;
+                    System.out.println("Starting in background mode to check for due tasks");
+                    runInBackgroundMode();
+                    return; // Exit immediately after background execution
+                }
+            }
+            
             // Set default logging level based on execution mode
             boolean isDebugMode = System.getProperty("debug") != null;
-            boolean isBackgroundMode = args.length > 0 && args[0].contains("--check-tasks");
             
             // Suppress console logs in interactive mode unless debug is enabled
             if (!isDebugMode && !isBackgroundMode) {
                 suppressConsoleLogging();
             }
             
-            // Log arguments for debugging
-            logger.info("***DEBUG*** Application started with " + args.length + " arguments");
-            if (args.length > 0) {
-                logger.info("***DEBUG*** First argument: [" + args[0] + "]");
-                // Add detailed logging for the first argument's characters
-                logger.info("***DEBUG*** First argument length: " + args[0].length());
-                for (int i = 0; i < args[0].length(); i++) {
-                    logger.info("***DEBUG*** Character at " + i + ": " + (int)args[0].charAt(i));
-                }
-            } else {
-                logger.info("***DEBUG*** No arguments provided");
-            }
-            
-            // Check if running in background mode
-            if (args.length > 0) {
-                // Enhanced parameter handling with multiple checks
-                String firstArg = args[0];
-                
-                // Remove any quotes that might be included
-                if (firstArg.startsWith("\"") && firstArg.endsWith("\"")) {
-                    firstArg = firstArg.substring(1, firstArg.length() - 1);
-                    logger.info("***DEBUG*** Stripped quotes from argument: now [" + firstArg + "]");
-                }
-                
-                // Trim and normalize the argument
-                firstArg = firstArg.trim();
-                
-                // Try multiple comparison methods to handle common issues
-                if (firstArg.equals("--check-tasks") || 
-                    firstArg.equalsIgnoreCase("--check-tasks") ||
-                    firstArg.contains("--check-tasks")) {
-                    
-                    logger.info("***DEBUG*** Running in background mode because --check-tasks parameter was detected");
-                    runInBackgroundMode();
-                    System.exit(0); // Explicitly exit to avoid interactive mode
-                    return;
-                } else {
-                    // Detailed logging for debugging
-                    logger.info("***DEBUG*** Argument provided but not matched: [" + firstArg + "] vs [--check-tasks]");
-                    logger.info("***DEBUG*** String length comparison: " + firstArg.length() + " vs 12");
-                    logger.info("***DEBUG*** String equals ignoreCase: " + firstArg.equalsIgnoreCase("--check-tasks"));
-                    logger.info("***DEBUG*** String contains: " + firstArg.contains("--check-tasks"));
-                    
-                    // Print character codes to check for hidden/special characters
-                    logger.info("***DEBUG*** Character codes for provided argument:");
-                    for (int i = 0; i < firstArg.length(); i++) {
-                        char c = firstArg.charAt(i);
-                        logger.info("***DEBUG*** Char at " + i + ": '" + c + "' (ASCII: " + (int)c + ")");
-                    }
-                    
-                    logger.info("***DEBUG*** Character codes for expected argument:");
-                    String expected = "--check-tasks";
-                    for (int i = 0; i < expected.length(); i++) {
-                        char c = expected.charAt(i);
-                        logger.info("***DEBUG*** Char at " + i + ": '" + c + "' (ASCII: " + (int)c + ")");
-                    }
-                }
-            }
-            
             // Normal interactive mode
-            logger.info("***DEBUG*** Running in interactive mode");
             runInInteractiveMode();
             
         } catch (Exception e) {
@@ -133,15 +160,13 @@ public class Main {
         
         commandHandler.start();
     }
-    
-    private static void runInBackgroundMode() {
-        logger.info("Starting in background mode to check for due tasks");
+      private static void runInBackgroundMode() {
+        System.out.println("Checking for due tasks...");
         BackgroundTaskRunner runner = new BackgroundTaskRunner();
         int executedTasks = runner.checkAndExecuteTasks();
-        logger.info("Background check completed. Executed " + executedTasks + " tasks");
+        System.out.println("Background check completed. Executed " + executedTasks + " tasks");
         
-        // Explicitly exit the application to prevent it from continuing to interactive mode
-        logger.info("Background task execution complete - exiting application");
+        // Exit the application
         System.exit(0);
     }
 } 

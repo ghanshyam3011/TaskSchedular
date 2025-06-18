@@ -1,41 +1,44 @@
 package com.taskscheduler;
 
-import java.util.Scanner;
-import java.util.Date;
+import java.io.File;
+import java.io.IOException;
+import java.time.DateTimeException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
-import java.time.DateTimeException;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.List;
-import java.util.ArrayList;
-import java.time.Duration;
-import java.io.IOException;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.jline.reader.impl.completer.ArgumentCompleter;
-import org.jline.reader.impl.completer.StringsCompleter;
-import java.io.File;
-import java.util.HashSet;
+
+import com.taskscheduler.nlp.NLPProcessor;
+import com.taskscheduler.nlp.NLPProcessor.ProcessedCommand;
 
 public class CommandHandler {
+    private static final Logger logger = Logger.getLogger(CommandHandler.class.getName());
     private final TaskManager taskManager;
     private final ReminderManager reminderManager;
     private final CommandLogger commandLogger;
     private final CommandPatternAnalyzer patternAnalyzer;
     private final LineReader reader;
-    private static final DateTimeFormatter[] DATE_FORMATTERS = {
+    private final NLPProcessor nlpProcessor;    private static final DateTimeFormatter[] DATE_FORMATTERS = {
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
         DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"),
         DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"),
         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"),
+        new DateTimeFormatterBuilder()
+            .appendPattern("HH:mm")
+            .parseDefaulting(ChronoField.YEAR, LocalDateTime.now().getYear())
+            .parseDefaulting(ChronoField.MONTH_OF_YEAR, LocalDateTime.now().getMonthValue())
+            .parseDefaulting(ChronoField.DAY_OF_MONTH, LocalDateTime.now().getDayOfMonth())
+            .toFormatter(),
         new DateTimeFormatterBuilder()
             .appendPattern("yyyy-MM-dd")
             .optionalStart()
@@ -51,6 +54,7 @@ public class CommandHandler {
         this.reminderManager = new ReminderManager(taskManager);
         this.commandLogger = new CommandLogger();
         this.patternAnalyzer = new CommandPatternAnalyzer(commandLogger);
+        this.nlpProcessor = new NLPProcessor();
         
         try {
             Terminal terminal = TerminalBuilder.builder()
@@ -74,10 +78,8 @@ public class CommandHandler {
         } catch (IOException e) {
             throw new RuntimeException("Failed to initialize terminal", e);
         }
-    }
-
-    public void start() {
-        System.out.println("Task Scheduler - Type 'help' for available commands");
+    }    public void start() {
+        com.taskscheduler.ui.UIManager.displayWelcome();
         
         while (true) {
             try {
@@ -94,15 +96,20 @@ public class CommandHandler {
                     }
                 }
 
-                String command = reader.readLine("> ");
+                com.taskscheduler.ui.UIManager.displayCommandPrompt();
+                String command = reader.readLine("");
                 if (command == null || command.equalsIgnoreCase("exit")) {
-                    System.out.println("Shutting down Task Scheduler...");
+                    com.taskscheduler.ui.UIManager.displayInfo("Shutting down Task Scheduler...");
                     reminderManager.shutdown();
                     System.exit(0);
                 }
                 handleCommands(command);
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number format: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid input: " + e.getMessage());
+            } catch (RuntimeException e) {
+                System.out.println("Runtime error: " + e.getMessage());
             }
         }
     }
@@ -115,18 +122,73 @@ public class CommandHandler {
         }
 
         // Log the command before handling it
-        commandLogger.logCommand(command);
-
+        commandLogger.logCommand(command);        try {
+            // Check if this is already a structured command
+            if (isStructuredCommand(command)) {
+                // Skip NLP processing and execute directly
+                executeCommand(command);
+                return;
+            }
+            
+            // Try to process as natural language first
+            ProcessedCommand processedCommand = nlpProcessor.processInput(command);            if (processedCommand != null) {
+                // If successful, show what we understood with beautiful UI
+                String formattedCmd = processedCommand.getFormattedCommand();
+                com.taskscheduler.ui.UIManager.displayInfo("✓ I understood: \"" + formattedCmd + "\"");
+                
+                // Execute the processed command without reprocessing
+                handleFormattedCommand(formattedCmd);
+                return;
+            }
+            
+            // If NLP processing didn't work, handle as regular command
+            executeCommand(command);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Handles a formatted command without attempting to process it as natural language again
+     */
+    private void handleFormattedCommand(String formattedCommand) {
         try {
-            if (command.equalsIgnoreCase("help")) {
-                showHelp();
+            executeCommand(formattedCommand);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Error executing command: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unexpected error executing command: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Executes a command after it has been processed
+     */
+    private void executeCommand(String command) {
+        try {            if (command.equalsIgnoreCase("help")) {
+                com.taskscheduler.ui.UIManager.displayHelp();
             } else if (command.equalsIgnoreCase("suggestions")) {
                 boolean currentState = ConfigManager.isSmartSuggestionsEnabled();
                 ConfigManager.setSmartSuggestionsEnabled(!currentState);
-                System.out.println("Smart suggestions are now " + (!currentState ? "enabled" : "disabled"));
-            } else if (command.startsWith("email-notification ")) {
+                System.out.println("Smart suggestions are now " + (!currentState ? "enabled" : "disabled"));            } else if (command.startsWith("email-notification ")) {
+                // This is a system command to set the default email address
                 String email = command.substring("email-notification ".length()).trim();
+                System.out.println("Setting up email notification with: " + email);
                 handleEmailNotification(email);
+            } else if (command.equalsIgnoreCase("test-email")) {
+                // Test email notification functionality
+                System.out.println("Testing email notification system...");
+                EmailTester.testEmailNotification();
             } else if (command.startsWith("add ")) {
                 String taskPart = command.substring(4).trim();
                 String[] parts = taskPart.split(" --");
@@ -135,22 +197,40 @@ public class CommandHandler {
                 for (int i = 1; i < parts.length; i++) {
                     modifiedParts[i] = "--" + parts[i];
                 }
-                handleAddTask(modifiedParts[0], modifiedParts);
-            } else if (command.equalsIgnoreCase("list")) {
-                taskManager.listTasks();
+                handleAddTask(modifiedParts[0], modifiedParts);            } else if (command.equalsIgnoreCase("list")) {
+                com.taskscheduler.ui.UIManager.displayTasksTable(taskManager.getTasks());
             } else if (command.equalsIgnoreCase("list upcoming")) {
                 listUpcomingTasks();
             } else if (command.equalsIgnoreCase("list overdue")) {
                 listOverdueTasks();
             } else if (command.startsWith("list --tag ")) {
                 String tag = command.substring(11).toLowerCase();
-                listTasksByTag(tag);
+                listTasksByTag(tag);            } else if (command.startsWith("view ")) {
+                int taskId = Integer.parseInt(command.substring(5));
+                Task task = taskManager.getTaskById(taskId);
+                if (task != null) {
+                    com.taskscheduler.ui.UIManager.displayTaskDetails(task);
+                } else {
+                    com.taskscheduler.ui.UIManager.displayError("Task not found with ID: " + taskId);
+                }
             } else if (command.startsWith("delete ")) {
                 int taskId = Integer.parseInt(command.substring(7));
-                taskManager.deleteTask(taskId);
+                Task task = taskManager.getTaskById(taskId);
+                if (task != null) {
+                    taskManager.deleteTask(taskId);
+                    com.taskscheduler.ui.UIManager.displaySuccess("Task deleted: \"" + task.getTitle() + "\"");
+                } else {
+                    com.taskscheduler.ui.UIManager.displayError("Task not found with ID: " + taskId);
+                }
             } else if (command.startsWith("complete ")) {
                 int taskId = Integer.parseInt(command.substring(9));
-                completeTask(taskId);
+                Task task = taskManager.getTaskById(taskId);
+                if (task != null) {
+                    completeTask(taskId);
+                    com.taskscheduler.ui.UIManager.displaySuccess("Task completed: \"" + task.getTitle() + "\"");
+                } else {
+                    com.taskscheduler.ui.UIManager.displayError("Task not found with ID: " + taskId);
+                }
             } else if (command.startsWith("due ")) {
                 String[] parts = command.split(" ", 3);
                 if (parts.length < 3) {
@@ -185,18 +265,19 @@ public class CommandHandler {
                 }
                 int taskId = Integer.parseInt(parts[0]);
                 String timeStr = parts[1].toLowerCase();
-                setReminderTime(taskId, timeStr);
-            } else {
-                showHelp();
+                setReminderTime(taskId, timeStr);            } else {
+                com.taskscheduler.ui.UIManager.displayError("Unknown command. Type 'help' for available commands.");
             }
         } catch (NumberFormatException e) {
-            System.out.println("Invalid task ID. Please enter a valid number.");
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            com.taskscheduler.ui.UIManager.displayError("Invalid task ID. Please enter a valid number.");
+        } catch (IllegalArgumentException e) {
+            com.taskscheduler.ui.UIManager.displayError("Invalid argument: " + e.getMessage());
+        } catch (DateTimeException e) {
+            com.taskscheduler.ui.UIManager.displayError("Date error: " + e.getMessage());
+        } catch (RuntimeException e) {
+            com.taskscheduler.ui.UIManager.displayError("Runtime error: " + e.getMessage());
         }
-    }
-
-    private void listUpcomingTasks() {
+    }    private void listUpcomingTasks() {
         LocalDateTime now = LocalDateTime.now();
         List<Task> upcomingTasks = taskManager.getTasks().stream()
             .filter(task -> !task.isCompleted() && task.getDueDate() != null && 
@@ -205,12 +286,8 @@ public class CommandHandler {
             .sorted((t1, t2) -> t1.getDueDate().compareTo(t2.getDueDate()))
             .collect(Collectors.toList());
 
-        if (upcomingTasks.isEmpty()) {
-            System.out.println("No upcoming tasks found.");
-        } else {
-            System.out.println("Upcoming Tasks:");
-            upcomingTasks.forEach(System.out::println);
-        }
+        System.out.println(com.taskscheduler.ui.Banner.createSubHeader("Upcoming Tasks", com.taskscheduler.ui.Icons.UPCOMING));
+        com.taskscheduler.ui.UIManager.displayTasksTable(upcomingTasks);
     }
 
     private void listOverdueTasks() {
@@ -220,25 +297,17 @@ public class CommandHandler {
             .sorted((t1, t2) -> t1.getDueDate().compareTo(t2.getDueDate()))
             .collect(Collectors.toList());
 
-        if (overdueTasks.isEmpty()) {
-            System.out.println("No overdue tasks found.");
-        } else {
-            System.out.println("Overdue Tasks:");
-            overdueTasks.forEach(System.out::println);
-        }
+        System.out.println(com.taskscheduler.ui.Banner.createSubHeader("Overdue Tasks", com.taskscheduler.ui.Icons.OVERDUE));
+        com.taskscheduler.ui.UIManager.displayTasksTable(overdueTasks);
     }
 
     private void listTasksByTag(String tag) {
-        boolean found = false;
-        for (Task task : taskManager.getTasks()) {
-            if (task.hasTag(tag)) {
-                System.out.println(task);
-                found = true;
-            }
-        }
-        if (!found) {
-            System.out.println("No tasks found with tag: " + tag);
-        }
+        List<Task> taggedTasks = taskManager.getTasks().stream()
+            .filter(task -> task.hasTag(tag))
+            .collect(Collectors.toList());
+            
+        System.out.println(com.taskscheduler.ui.Banner.createSubHeader("Tasks with tag: " + tag, com.taskscheduler.ui.Icons.TAG));
+        com.taskscheduler.ui.UIManager.displayTasksTable(taggedTasks);
     }
 
     private void addTagsToTask(int taskId, String[] tags) {
@@ -269,53 +338,7 @@ public class CommandHandler {
         System.out.println("Task not found.");
     }
 
-    private LocalDateTime parseTimeFromTitle(String title) {
-        try {
-            // First try to find a date in the title
-            String[] words = title.toLowerCase().split("\\s+");
-            for (int i = 0; i < words.length - 1; i++) {
-                if (words[i].equals("at") || words[i].equals("on")) {
-                    String dateStr = words[i + 1];
-                    // Try each formatter
-                    for (DateTimeFormatter formatter : DATE_FORMATTERS) {
-                        try {
-                            return LocalDateTime.parse(dateStr, formatter);
-                        } catch (DateTimeParseException e) {
-                            // Continue to next formatter
-                        }
-                    }
-                }
-            }
 
-            // If no date found, try to find time in format like "at 2pm", "at 2:30pm", etc.
-            for (int i = 0; i < words.length - 1; i++) {
-                if (words[i].equals("at")) {
-                    String timeStr = words[i + 1];
-                    LocalDateTime now = LocalDateTime.now();
-                    
-                    // Handle 12-hour format with AM/PM
-                    if (timeStr.matches("\\d{1,2}(?::\\d{2})?(?:am|pm)")) {
-                        boolean isPM = timeStr.toLowerCase().endsWith("pm");
-                        timeStr = timeStr.toLowerCase().replaceAll("(am|pm)", "").trim();
-                        
-                        String[] timeParts = timeStr.split(":");
-                        int hour = Integer.parseInt(timeParts[0]);
-                        int minute = timeParts.length > 1 ? Integer.parseInt(timeParts[1]) : 0;
-                        
-                        // Convert to 24-hour format
-                        if (isPM && hour < 12) hour += 12;
-                        if (!isPM && hour == 12) hour = 0;
-                        
-                        return LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), hour, minute);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            // If any error occurs during parsing, return null (no time set)
-            return null;
-        }
-        return null;
-    }
 
     private void completeTask(int taskId) {
         taskManager.completeTask(taskId);
@@ -323,7 +346,6 @@ public class CommandHandler {
 
     private void setDueDate(int taskId, String dueDateStr) {
         LocalDateTime dueDate = null;
-        DateTimeParseException lastException = null;
 
         // Try each formatter until one works
         for (DateTimeFormatter formatter : DATE_FORMATTERS) {
@@ -333,7 +355,7 @@ public class CommandHandler {
                 validateDate(dueDate);
                 break;
             } catch (DateTimeParseException e) {
-                lastException = e;
+                // Continue with next formatter
             } catch (DateTimeException e) {
                 System.out.println("Invalid date: " + e.getMessage());
                 return;
@@ -468,12 +490,18 @@ public class CommandHandler {
         return type != null && (type.equalsIgnoreCase("daily") || 
                               type.equalsIgnoreCase("weekly") || 
                               type.equalsIgnoreCase("monthly"));
-    }
-
-    private LocalDateTime parseDate(String dateStr) {
+    }    private LocalDateTime parseDate(String dateStr) {
         for (DateTimeFormatter formatter : DATE_FORMATTERS) {
             try {
-                return LocalDateTime.parse(dateStr.trim(), formatter);
+                LocalDateTime result = LocalDateTime.parse(dateStr.trim(), formatter);
+                
+                // Special handling for time-only format (HH:mm)
+                // If the parsed time is in the past, assume it's for tomorrow
+                if (dateStr.trim().matches("\\d{1,2}:\\d{2}") && result.isBefore(LocalDateTime.now())) {
+                    result = result.plusDays(1);
+                }
+                
+                return result;
             } catch (DateTimeParseException e) {
                 // Try next formatter
             }
@@ -483,20 +511,48 @@ public class CommandHandler {
 
     private void handleAddTask(String taskTitle, String[] parts) {
         try {
-            // Extract title and time
-            String[] titleParts = taskTitle.split(" at ", 2);
-            if (titleParts.length != 2) {
+            // Extract title and time/date
+            String title;
+            String timeOrDate;
+            
+            // Check if this is a "due" format or "at" format
+            if (taskTitle.contains(" due ")) {
+                String[] dueParts = taskTitle.split(" due ", 2);
+                if (dueParts.length != 2) {
+                    System.out.println("Invalid format. Use: add \"Task Title\" due yyyy-MM-dd HH:mm [options]");
+                    return;
+                }
+                title = dueParts[0];
+                timeOrDate = dueParts[1];
+            } else if (taskTitle.contains(" at ")) {
+                String[] atParts = taskTitle.split(" at ", 2);
+                if (atParts.length != 2) {
+                    System.out.println("Invalid format. Use: add \"Task Title\" at HH:mm [options]");
+                    return;
+                }
+                title = atParts[0];
+                timeOrDate = atParts[1];
+            } else {
                 System.out.println("Invalid format. Use: add \"Task Title\" at HH:mm [options]");
                 return;
             }
 
-            String title = titleParts[0].trim();
             if (title.startsWith("\"") && title.endsWith("\"")) {
                 title = title.substring(1, title.length() - 1);
             }
 
-            String timeStr = titleParts[1].trim();
-            LocalDateTime dueDate = parseDate(timeStr);
+            LocalDateTime dueDate;
+            try {
+                dueDate = parseDate(timeOrDate);
+            } catch (DateTimeParseException e) {
+                // If timeOrDate is just a time (HH:mm), add today's date
+                if (timeOrDate.matches("\\d{1,2}:\\d{2}")) {
+                    String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    dueDate = parseDate(today + " " + timeOrDate);
+                } else {
+                    throw e;
+                }
+            }
             validateDate(dueDate);
 
             Task task = new Task(0, title, false, dueDate);
@@ -531,11 +587,20 @@ public class CommandHandler {
                     String[] tags = part.substring("--tag ".length()).trim().split("\\s+");
                     for (String tag : tags) {
                         task.addTag(tag);
-                    }
-                } else if (part.startsWith("--email ")) {
+                    }                } else if (part.startsWith("--email ")) {
                     String email = part.substring("--email ".length()).trim();
                     if (isValidEmail(email)) {
                         task.setEmail(email);
+                    }
+                } else if (part.equals("--notify-email")) {
+                    // Get the default email from config and set it for this task
+                    String defaultEmail = ConfigManager.getEmail();
+                    if (defaultEmail != null && !defaultEmail.isEmpty()) {
+                        task.setEmail(defaultEmail);
+                        System.out.println("Email notification will be sent to: " + defaultEmail);
+                    } else {
+                        System.out.println("Warning: Email notification requested but no default email is set.");
+                        System.out.println("Use 'email-notification <your-email>' to set a default email address.");
                     }
                 }
             }
@@ -543,15 +608,46 @@ public class CommandHandler {
             // Verify command was set
             if (task.getCommand() == null || task.getCommand().trim().isEmpty()) {
                 System.out.println("Warning: No command specified for task: " + title);
-            }
-
-            taskManager.addTask(task);
-            System.out.println("Added task: \"" + title + "\"");
+            }            taskManager.addTask(task);
+            com.taskscheduler.ui.UIManager.displaySuccess("Added task: \"" + title + "\"");
         } catch (DateTimeParseException e) {
             System.out.println("Invalid date/time format. Use: yyyy-MM-dd HH:mm or HH:mm");
-        } catch (Exception e) {
+        } catch (DateTimeException e) {
+            System.out.println("Date error: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid argument: " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("Error adding task: " + e.getMessage());
         }
+    }
+
+    /**
+     * Checks if the input is already a structured command (not natural language)
+     */
+    private boolean isStructuredCommand(String input) {
+        String trimmed = input.trim().toLowerCase();
+        
+        // Commands that start with these keywords are likely structured commands
+        String[] commandPrefixes = {
+            "add \"", "list", "complete ", "delete ", "help", "exit", "menu", 
+            "due ", "recurring ", "email-notification ", "suggestions"
+        };
+        
+        for (String prefix : commandPrefixes) {
+            if (trimmed.startsWith(prefix)) {
+                return true;
+            }
+        }
+        
+        // Additional pattern checks for structured commands
+        // Pattern: add "title" at/due time/date [options]
+        if (trimmed.matches("add\\s+\"[^\"]+\"\\s+(at|due)\\s+.*")) {
+            return true;
+        }
+        
+        return false;
     }
 
     private void showHelp() {
@@ -571,9 +667,9 @@ public class CommandHandler {
         help.append("  complete <id>                   - Mark a task as completed\n");
         help.append("  due <id> <date>                 - Set due date for a task\n");
         help.append("  tag <id> <tag1> [tag2 tag3 ...] - Add tags to a task\n");
-        help.append("  untag <id> <tag1> [tag2 tag3 ...] - Remove tags from a task\n");
-        help.append("  reminder <id> <time>            - Set reminder for a task (e.g., 30m or 2h)\n");
+        help.append("  untag <id> <tag1> [tag2 tag3 ...] - Remove tags from a task\n");        help.append("  reminder <id> <time>            - Set reminder for a task (e.g., 30m or 2h)\n");
         help.append("  email-notification <email>      - Set email for task reminders\n");
+        help.append("  test-email                      - Test email notification system\n");
         help.append("  suggestions                     - Toggle smart command suggestions\n");
         help.append("  help                            - Show this help message\n");
         help.append("  exit                            - Exit the program");
