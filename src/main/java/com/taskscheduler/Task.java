@@ -1,19 +1,19 @@
 package com.taskscheduler;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.gson.annotations.Expose;
-import java.lang.ProcessBuilder;
 
 public class Task {
     private static final Logger logger = Logger.getLogger(Task.class.getName());
@@ -58,10 +58,11 @@ public class Task {
     private String cronExpression; // Store cron expression for recurring tasks
     
     @Expose
-    private String command; // Added command field
+    private String command; // Added command field    @Expose
+    private String email; // Added email field
     
     @Expose
-    private String email; // Added email field
+    private Priority priority; // Task priority
 
     public Task(int id, String title, boolean completed, LocalDateTime dueDate) {
         this.id = id;
@@ -74,6 +75,7 @@ public class Task {
         this.isRecurring = false;
         this.occurrencesGenerated = 0;
         this.recurrenceCount = 0;
+        this.priority = Priority.MEDIUM; // Default priority
     }
 
     public int getId() {
@@ -271,9 +273,7 @@ public class Task {
         // Check if the next occurrence would be after the end date
         if (recurrenceEnd != null && nextDue.isAfter(recurrenceEnd)) {
             return null;
-        }
-
-        // Create the next occurrence
+        }        // Create the next occurrence
         Task next = new Task(0, this.title, false, nextDue); // ID will be set by TaskManager
         next.setRecurring(true);
         next.setRecurrenceType(this.recurrenceType);
@@ -283,15 +283,24 @@ public class Task {
         next.setTags(new HashSet<>(this.tags));
         next.setReminderTime(this.reminderTime);
         next.setCronExpression(this.cronExpression);
+        next.setPriority(this.priority); // Copy priority
+        next.setCommand(this.command); // Copy command
+        next.setEmail(this.email); // Copy email
         return next;
     }
 
     public String getEmail() {
         return email;
+    }    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public Priority getPriority() {
+        return priority != null ? priority : Priority.MEDIUM;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority != null ? priority : Priority.MEDIUM;
     }
 
     public void execute() {
@@ -374,10 +383,9 @@ public class Task {
         }
     }
 
-    @Override
-    public String toString() {
+    @Override    public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("[%d] %s (Completed: %s)", id, title, completed));
+        sb.append(String.format("[%d] %s %s (Completed: %s)", id, getPriority().getIcon(), title, completed));
         
         if (dueDate != null) {
             try {
@@ -387,6 +395,9 @@ public class Task {
                 sb.append(" Due: [invalid date]");
             }
         }
+
+        // Add priority information
+        sb.append(" [Priority: ").append(getPriority().getColoredDisplay()).append("]");
 
         if (isRecurring) {
             sb.append(" [Recurring: ").append(recurrenceType);
