@@ -25,6 +25,9 @@ temp_classes/
 scheduler_log.txt
 task_checker_log.txt
 task_checker_output.log
+task_output.txt
+manual_test_output.txt
+final_output.txt
 
 # Test files
 *_test_result.txt
@@ -37,6 +40,38 @@ background_test_result.txt
 service_test.txt
 timing_test_result.txt
 tascSaved*
+
+# Test Java files
+TestNLPCommand.java
+TestNattyParsing.java
+TestCompleteCommand.java
+TestCurrentTime.java
+TestDirectCommand.java
+TestExtractionDebug.java
+TestNLPExtraction.java
+TestTimeParser.java
+TestTimeParser2.java
+TestTimeParsingDebug.java
+TestTimeParsingDirect.java
+TestTimeRemoval.java
+test_nlp_priority.java
+test_nlp_priority.class
+test_email.bat
+create_test_task.bat
+
+# Runtime files
+command_history.json
+email-config.json
+user-config.json
+*.conflict
+
+# Documentation files
+Action Verbs_Resume.pdf
+maven-guide.md
+
+# Downloaded libraries and tools
+lib/
+nssm-2.24-101-g897c7ad/
 
 # Package files
 *.jar

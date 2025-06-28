@@ -48,11 +48,12 @@ public class NLPProcessor {
             case IntentDetector.INTENT_ADD:
                 return processAddTaskIntent(normalizedInput);
             case IntentDetector.INTENT_LIST:
-                return processListTasksIntent(normalizedInput);
-            case IntentDetector.INTENT_COMPLETE:
+                return processListTasksIntent(normalizedInput);            case IntentDetector.INTENT_COMPLETE:
                 return processCompleteTaskIntent(normalizedInput);
             case IntentDetector.INTENT_DELETE:
                 return processDeleteTaskIntent(normalizedInput);
+            case IntentDetector.INTENT_CLEAR:
+                return new ProcessedCommand(intent, "clear");
             case IntentDetector.INTENT_HELP:
                 return new ProcessedCommand(intent, "help");
             default:
@@ -110,19 +111,41 @@ public class NLPProcessor {
             // If no date/time found, default to tomorrow at noon
             LocalDateTime tomorrow = LocalDateTime.now().plusDays(1).withHour(12).withMinute(0);
             command.append(" due ").append(tomorrow.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        }        
-          // Add priority if detected
+        }            // Add priority if detected
         if (detectedPriority != com.taskscheduler.Priority.MEDIUM) {
             command.append(" --priority ").append(detectedPriority.name().toLowerCase());
             final com.taskscheduler.Priority finalDetectedPriority = detectedPriority;
             logger.info(() -> "Detected priority: " + finalDetectedPriority.getDisplayName());
         }
         
+        // Detect and add tags from the original input
+        String[] inputWords = input.split("\\s+");
+        for (String word : inputWords) {
+            if (word.startsWith("--") && word.length() > 2) {
+                String potentialTag = word.substring(2);
+                // Skip known parameters, treat others as tags
+                if (!isKnownParameter(potentialTag)) {
+                    command.append(" --tag ").append(potentialTag);
+                    logger.info(() -> "Detected tag from input: " + potentialTag);
+                }
+            }
+        }
+        
         // Use the previously determined email intent
         if (hasEmailIntent) {
-            // Add email notification flag to the command
-            command.append(" --notify-email");
-            logger.info(() -> "Added email notification flag based on natural language request");
+            // Add email notification flag to the command only if it doesn't already contain it
+            if (!command.toString().contains("--notify-email")) {
+                command.append(" --notify-email");
+                logger.info(() -> "Added email notification flag based on natural language request");
+            }
+        } else {
+            // Make sure there's no email flag for inputs without email intent
+            if (command.toString().contains("--notify-email")) {
+                logger.info(() -> "Removing incorrectly added email notification flag");
+                String cmdStr = command.toString().replace("--notify-email", "").trim();
+                command.setLength(0);
+                command.append(cmdStr);
+            }
         }
         
         return new ProcessedCommand(IntentDetector.INTENT_ADD, command.toString());
@@ -178,6 +201,22 @@ public class NLPProcessor {
     }
     
     /**
+     * Checks if a parameter name is a known system parameter (not a tag)
+     */
+    private boolean isKnownParameter(String param) {
+        String[] knownParams = {
+            "notify-email", "repeat", "end", "reminder", "email", "priority", "tag"
+        };
+        
+        for (String known : knownParams) {
+            if (param.equals(known)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Class representing a processed command with intent and formatted command string.
      */
     public static class ProcessedCommand {
@@ -193,7 +232,15 @@ public class NLPProcessor {
             return intent;
         }
         
+        public String getIntentType() {
+            return intent;
+        }
+        
         public String getFormattedCommand() {
+            return formattedCommand;
+        }
+        
+        public String getCommand() {
             return formattedCommand;
         }
         
