@@ -1230,5 +1230,425 @@
   {
     "command": "list",
     "timestamp": "2025-06-03 18:58"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 11:07"
+  },
+  {
+    "command": "nofity me to wake up @Cafe in 3 minutes",
+    "timestamp": "2025-06-19 11:08"
+  },
+  {
+    "command": "remind me and nofity me to wake up @Cafe in 3 minutes",
+    "timestamp": "2025-06-19 11:09"
+  },
+  {
+    "command": "remind me and nofity me to wake up @Cafe in 3 minutes its urgent",
+    "timestamp": "2025-06-19 11:09"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 11:12"
+  },
+  {
+    "command": "remid me to wake in 3 minutes from now ",
+    "timestamp": "2025-06-19 11:13"
+  },
+  {
+    "command": "remid me to wake in 3 minutes",
+    "timestamp": "2025-06-19 11:13"
+  },
+  {
+    "command": "remid me waking up in 3 minutes notify me also",
+    "timestamp": "2025-06-19 11:13"
+  },
+  {
+    "command": "remid me meeting with boss in 4 minutes",
+    "timestamp": "2025-06-19 11:13"
+  },
+  {
+    "command": "reminder 41 1m",
+    "timestamp": "2025-06-19 11:14"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 11:14"
+  },
+  {
+    "command": "heklp",
+    "timestamp": "2025-06-19 11:15"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 11:15"
+  },
+  {
+    "command": "schedule a low priority meeting with employee in 3 minutes and also notify me",
+    "timestamp": "2025-06-19 11:16"
+  },
+  {
+    "command": "reminder 42 1m",
+    "timestamp": "2025-06-19 11:16"
+  },
+  {
+    "command": "list",
+    "timestamp": "2025-06-19 11:19"
+  },
+  {
+    "command": "schedule online zoom meeting in 3 minutes --work",
+    "timestamp": "2025-06-19 11:20"
+  },
+  {
+    "command": "list",
+    "timestamp": "2025-06-19 11:21"
+  },
+  {
+    "command": "schedule online zoom meeting in 3 minutes --work",
+    "timestamp": "2025-06-19 11:26"
+  },
+  {
+    "command": "schedule online zoom meeting in 3 minutes --home",
+    "timestamp": "2025-06-19 11:26"
+  },
+  {
+    "command": "show list",
+    "timestamp": "2025-06-19 11:26"
+  },
+  {
+    "command": "email-notification ghanshyamthacker3011@gmail.com",
+    "timestamp": "2025-06-19 11:27"
+  },
+  {
+    "command": "show list",
+    "timestamp": "2025-06-19 11:27"
+  },
+  {
+    "command": "\texit",
+    "timestamp": "2025-06-19 11:30"
+  },
+  {
+    "command": "exut",
+    "timestamp": "2025-06-19 11:30"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 11:31"
+  },
+  {
+    "command": "show ",
+    "timestamp": "2025-06-19 11:31"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 11:34"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 11:34"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 11:34"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 11:35"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 11:44"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 11:44"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 16:12"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 16:13"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 16:18"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 16:18"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 16:19"
+  },
+  {
+    "command": "exi",
+    "timestamp": "2025-06-19 16:40"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 16:40"
+  },
+  {
+    "command": "clear",
+    "timestamp": "2025-06-19 16:40"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 16:40"
+  },
+  {
+    "command": "clean",
+    "timestamp": "2025-06-19 16:41"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 16:41"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 16:46"
+  },
+  {
+    "command": "clear",
+    "timestamp": "2025-06-19 16:46"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 16:46"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 19:02"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 19:02"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 19:03"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-19 19:03"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-19 19:03"
+  },
+  {
+    "command": "show list",
+    "timestamp": "2025-06-28 16:54"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 17:55"
+  },
+  {
+    "command": "11111",
+    "timestamp": "2025-06-28 17:57"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 17:57"
+  },
+  {
+    "command": "show all",
+    "timestamp": "2025-06-28 17:57"
+  },
+  {
+    "command": "view 24",
+    "timestamp": "2025-06-28 17:58"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 17:58"
+  },
+  {
+    "command": "test-email",
+    "timestamp": "2025-06-28 17:58"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 18:05"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 18:08"
+  },
+  {
+    "command": "suggestion",
+    "timestamp": "2025-06-28 18:08"
+  },
+  {
+    "command": "suggestions",
+    "timestamp": "2025-06-28 18:08"
+  },
+  {
+    "command": "suggestions",
+    "timestamp": "2025-06-28 18:08"
+  },
+  {
+    "command": "delete 47",
+    "timestamp": "2025-06-28 18:08"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 18:17"
+  },
+  {
+    "command": "clear",
+    "timestamp": "2025-06-28 18:18"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 18:18"
+  },
+  {
+    "command": "suggestions",
+    "timestamp": "2025-06-28 18:18"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 22:28"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-28 22:28"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-28 22:30"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 22:30"
+  },
+  {
+    "command": "refresh ",
+    "timestamp": "2025-06-28 22:30"
+  },
+  {
+    "command": "refresh",
+    "timestamp": "2025-06-28 22:30"
+  },
+  {
+    "command": "",
+    "timestamp": "2025-06-28 22:30"
+  },
+  {
+    "command": "help ",
+    "timestamp": "2025-06-28 22:30"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 22:30"
+  },
+  {
+    "command": "cls",
+    "timestamp": "2025-06-28 22:31"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 22:31"
+  },
+  {
+    "command": "suggestions",
+    "timestamp": "2025-06-28 22:31"
+  },
+  {
+    "command": "email-notification ghanshyamthacker3011@gmail.com",
+    "timestamp": "2025-06-28 22:31"
+  },
+  {
+    "command": "remind me to submit report in 3 minutes email me ",
+    "timestamp": "2025-06-28 22:31"
+  },
+  {
+    "command": "reminder 47 1m",
+    "timestamp": "2025-06-28 22:32"
+  },
+  {
+    "command": "shiw",
+    "timestamp": "2025-06-28 22:36"
+  },
+  {
+    "command": "show",
+    "timestamp": "2025-06-28 22:36"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 22:39"
+  },
+  {
+    "command": "exirt",
+    "timestamp": "2025-06-28 22:40"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 22:41"
+  },
+  {
+    "command": "email-notification ghanshyamthacker3011@gmail.com",
+    "timestamp": "2025-06-28 22:41"
+  },
+  {
+    "command": "remind me meeting with her after 3 minutes and notify me also",
+    "timestamp": "2025-06-28 22:42"
+  },
+  {
+    "command": "reminder 48 1m",
+    "timestamp": "2025-06-28 22:42"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 22:44"
+  },
+  {
+    "command": "settings",
+    "timestamp": "2025-06-28 22:45"
+  },
+  {
+    "command": "settings",
+    "timestamp": "2025-06-28 22:45"
+  },
+  {
+    "command": "show settings",
+    "timestamp": "2025-06-28 22:45"
+  },
+  {
+    "command": "list",
+    "timestamp": "2025-06-28 22:45"
+  },
+  {
+    "command": "show ",
+    "timestamp": "2025-06-28 22:46"
+  },
+  {
+    "command": "complete 48",
+    "timestamp": "2025-06-28 22:47"
+  },
+  {
+    "command": "list",
+    "timestamp": "2025-06-28 22:47"
+  },
+  {
+    "command": "email-notification ghanshyamthacker3011@gmail.com",
+    "timestamp": "2025-06-28 22:49"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 22:49"
+  },
+  {
+    "command": "help",
+    "timestamp": "2025-06-28 22:52"
+  },
+  {
+    "command": "email-notification ghanshyamthacker3011@gmail.com",
+    "timestamp": "2025-06-28 22:53"
   }
 ]

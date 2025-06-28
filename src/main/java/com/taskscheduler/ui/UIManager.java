@@ -30,9 +30,8 @@ public class UIManager {
             return;
         }
         
-        System.out.println(Banner.createSubHeader("Task Overview", Icons.TASK));
-          Table table = new Table()
-            .setHeaders("ID", "Priority", "Status", "Task", "Due Date", "Email", "Tags")
+        System.out.println(Banner.createSubHeader("Task Overview", Icons.TASK));        Table table = new Table()
+            .setHeaders("ID", "Priority", "Status", "Task", "Due Date", "Tags")
             .setBorderColor(Colors.CYAN)
             .setHeaderColor(Colors.BLUE_BOLD)
             .setDataColor(Colors.WHITE);
@@ -42,8 +41,6 @@ public class UIManager {
             String priorityDisplay = task.getPriority().getColoredDisplay();
             String dueDate = task.getDueDate() != null ? 
                 task.getDueDate().format(DATE_FORMATTER) : "No due date";
-            String emailStatus = task.getEmail() != null ? 
-                Colors.success("✓") : Colors.error("✗");
             String tags = task.getTags().isEmpty() ? 
                 Colors.DIM + "none" + Colors.RESET : 
                 String.join(", ", task.getTags());
@@ -54,7 +51,6 @@ public class UIManager {
                 statusIcon + " " + statusText,
                 truncateText(task.getTitle(), 25),
                 dueDate,
-                emailStatus,
                 truncateText(tags, 15)
             );
         }
@@ -122,6 +118,8 @@ public class UIManager {
     }
     
     public static void displayCommandPrompt() {
+        // Add a blank line before the prompt for better visual separation between commands
+        System.out.println();
         System.out.print(Colors.YELLOW_BOLD + "📋 TaskScheduler" + Colors.CYAN + " > " + Colors.RESET);
     }
       private static void displayTaskSummary(List<com.taskscheduler.Task> tasks) {
@@ -230,10 +228,16 @@ public class UIManager {
         helpTable.addRow("list overdue", "Show overdue tasks", "list overdue");
         helpTable.addRow("complete <id>", "Mark task as completed", "complete 1");
         helpTable.addRow("delete <id>", "Delete a task", "delete 2");
-        helpTable.addRow("view <id>", "Show task details", "view 1");
+        helpTable.addRow("due <id> <date>", "Set task due date", "due 3 2025-06-30 14:00");
+        helpTable.addRow("tag <id> <tags...>", "Add tags to a task", "tag 3 work important");
+        helpTable.addRow("untag <id> <tags...>", "Remove tags from a task", "untag 3 important");
+        helpTable.addRow("reminder <id> <time>", "Set reminder for a task", "reminder 3 30min");
+        helpTable.addRow("clear/refresh/cls", "Clear the screen", "clear");
         helpTable.addRow("email-notification", "Set email for notifications", "email-notification user@example.com");
-        helpTable.addRow("test-email", "Test email system", "test-email");
+        helpTable.addRow("suggestions", "Toggle auto suggestions", "suggestions");
         helpTable.addRow("menu", "Interactive menu mode", "menu");
+        helpTable.addRow("settings", "Show/modify settings", "settings");
+        helpTable.addRow("debug", "Show debug information", "debug");
         helpTable.addRow("help", "Show this help", "help");
         helpTable.addRow("exit", "Exit the application", "exit");
         
@@ -243,6 +247,14 @@ public class UIManager {
         System.out.println(Colors.WHITE + "  • Use natural language: " + Colors.YELLOW + "\"remind me to call John tomorrow at 3pm and email me\"" + Colors.RESET);
         System.out.println(Colors.WHITE + "  • Add email notifications: " + Colors.YELLOW + "\"--notify-email\"" + Colors.RESET);
         System.out.println(Colors.WHITE + "  • Set custom commands: " + Colors.YELLOW + "\"--command 'echo Task completed'\"" + Colors.RESET);
+        System.out.println();
+    }
+
+    /**
+     * Ensures proper spacing after command output by adding blank lines if needed.
+     * This method can be called after displaying command output.
+     */
+    public static void ensureCommandSpacing() {
         System.out.println();
     }
 }

@@ -1,106 +1,102 @@
 package com.taskscheduler.ui;
 
 /**
- * Unicode icons and symbols for enhanced CLI appearance with ASCII fallbacks
+ * Icons and symbols for CLI appearance (ASCII only)
  */
-public class Icons {    // Check if terminal supports Unicode
-    private static final boolean SUPPORTS_UNICODE = checkUnicodeSupport();
-    
-    private static boolean checkUnicodeSupport() {
-        // Check various indicators for Unicode support
-        String encoding = System.getProperty("file.encoding", "").toLowerCase();
-        String term = System.getenv("TERM");
-        String os = System.getProperty("os.name").toLowerCase();
-        
-        // If encoding contains UTF, likely supports Unicode
-        if (encoding.contains("utf")) {
-            return true;
-        }
-        
-        // Modern terminals usually support Unicode
-        if (term != null && (term.contains("xterm") || term.contains("color"))) {
-            return true;
-        }
-        
-        // For Windows, be conservative and use ASCII by default
-        // Users can override with system property -Dunicode=true
-        if (os.contains("windows")) {
-            return "true".equals(System.getProperty("unicode"));
-        }
-        
-        // For other systems (Linux, Mac), assume Unicode support
-        return true;
-    }
-    
+public class Icons {
     // Task status icons
-    public static final String COMPLETED = SUPPORTS_UNICODE ? "✅" : "[✓]";
-    public static final String PENDING = SUPPORTS_UNICODE ? "⏳" : "[⧗]";
-    public static final String OVERDUE = SUPPORTS_UNICODE ? "❌" : "[✗]";
-    public static final String DUE_SOON = SUPPORTS_UNICODE ? "⚠️" : "[!]";
-    public static final String UPCOMING = SUPPORTS_UNICODE ? "📅" : "[○]";
-    public static final String RECURRING = SUPPORTS_UNICODE ? "🔄" : "[↻]";
+    public static final String COMPLETED = "[DONE]";
+    public static final String PENDING = "[WAIT]";
+    public static final String OVERDUE = "[LATE]";
+    public static final String DUE_SOON = "[DUE!]";
+    public static final String UPCOMING = "[TODO]";
+    public static final String RECURRING = "[RPT]";
     
     // Action icons
-    public static final String ADD = SUPPORTS_UNICODE ? "➕" : "[+]";
-    public static final String DELETE = SUPPORTS_UNICODE ? "🗑️" : "[X]";
-    public static final String EDIT = SUPPORTS_UNICODE ? "✏️" : "[E]";
-    public static final String VIEW = SUPPORTS_UNICODE ? "👁️" : "[V]";
-    public static final String SEARCH = SUPPORTS_UNICODE ? "🔍" : "[?]";    public static final String SETTINGS = SUPPORTS_UNICODE ? "⚙️" : "[S]";
-    public static final String HELP = SUPPORTS_UNICODE ? "❓" : "[?]";
-    public static final String EXIT = SUPPORTS_UNICODE ? "🚪" : "[X]";
+    public static final String ADD = "[ADD]";
+    public static final String DELETE = "[DEL]";
+    public static final String EDIT = "[EDIT]";
+    public static final String VIEW = "[VIEW]";
+    public static final String SEARCH = "[FIND]";
+    public static final String SETTINGS = "[SET]";
+    public static final String HELP = "[HELP]";
+    public static final String EXIT = "[EXIT]";
     
     // General icons
-    public static final String CLOCK = SUPPORTS_UNICODE ? "🕐" : "[T]";
-    public static final String CALENDAR = SUPPORTS_UNICODE ? "📅" : "[C]";
-    public static final String EMAIL = SUPPORTS_UNICODE ? "📧" : "[@]";
-    public static final String COMMAND = SUPPORTS_UNICODE ? "💻" : "[>]";
-    public static final String TAG = SUPPORTS_UNICODE ? "🏷️" : "[#]";
-    public static final String REMINDER = SUPPORTS_UNICODE ? "🔔" : "[R]";
-    public static final String SUCCESS = SUPPORTS_UNICODE ? "🎉" : "[✓]";
-    public static final String ERROR = SUPPORTS_UNICODE ? "💥" : "[!]";
-    public static final String WARNING = SUPPORTS_UNICODE ? "⚠️" : "[!]";
-    public static final String INFO = SUPPORTS_UNICODE ? "ℹ️" : "[i]";
+    public static final String CLOCK = "[TIME]";
+    public static final String CALENDAR = "[CAL]";
+    public static final String EMAIL = "[MAIL]";
+    public static final String COMMAND = "[CMD]";
+    public static final String TAG = "[TAG]";
+    public static final String REMINDER = "[RING]";
+    public static final String SUCCESS = "[OK]";
+    public static final String ERROR = "[ERR]";
+    public static final String WARNING = "[WARN]";
+    public static final String INFO = "[INFO]";
     
     // Navigation icons
-    public static final String ARROW_RIGHT = SUPPORTS_UNICODE ? "→" : ">";
-    public static final String ARROW_LEFT = SUPPORTS_UNICODE ? "←" : "<";
-    public static final String ARROW_UP = SUPPORTS_UNICODE ? "↑" : "^";
-    public static final String ARROW_DOWN = SUPPORTS_UNICODE ? "↓" : "v";
-    public static final String BULLET = SUPPORTS_UNICODE ? "•" : "*";
-    public static final String CHEVRON_RIGHT = SUPPORTS_UNICODE ? "▶" : ">";
-    public static final String CHEVRON_DOWN = SUPPORTS_UNICODE ? "▼" : "v";
+    public static final String ARROW_RIGHT = ">";
+    public static final String ARROW_LEFT = "<";
+    public static final String ARROW_UP = "^";
+    public static final String ARROW_DOWN = "v";
+    public static final String BULLET = "*";
+    public static final String CHEVRON_RIGHT = ">";
+    public static final String CHEVRON_DOWN = "v";
     
     // Border characters for tables
-    public static final String HORIZONTAL = SUPPORTS_UNICODE ? "─" : "-";
-    public static final String VERTICAL = SUPPORTS_UNICODE ? "│" : "|";
-    public static final String TOP_LEFT = SUPPORTS_UNICODE ? "┌" : "+";
-    public static final String TOP_RIGHT = SUPPORTS_UNICODE ? "┐" : "+";
-    public static final String BOTTOM_LEFT = SUPPORTS_UNICODE ? "└" : "+";
-    public static final String BOTTOM_RIGHT = SUPPORTS_UNICODE ? "┘" : "+";
-    public static final String CROSS = SUPPORTS_UNICODE ? "┼" : "+";
-    public static final String T_DOWN = SUPPORTS_UNICODE ? "┬" : "+";
-    public static final String T_UP = SUPPORTS_UNICODE ? "┴" : "+";
-    public static final String T_RIGHT = SUPPORTS_UNICODE ? "├" : "+";
-    public static final String T_LEFT = SUPPORTS_UNICODE ? "┤" : "+";
+    public static final String HORIZONTAL = "-";
+    public static final String VERTICAL = "|";
+    public static final String TOP_LEFT = "+";
+    public static final String TOP_RIGHT = "+";
+    public static final String BOTTOM_LEFT = "+";
+    public static final String BOTTOM_RIGHT = "+";
+    public static final String CROSS = "+";
+    public static final String T_DOWN = "+";
+    public static final String T_UP = "+";
+    public static final String T_RIGHT = "+";
+    public static final String T_LEFT = "+";
     
     // Progress indicators
-    public static final String PROGRESS_FULL = SUPPORTS_UNICODE ? "█" : "#";
-    public static final String PROGRESS_PARTIAL = SUPPORTS_UNICODE ? "▓" : "-";
-    public static final String PROGRESS_EMPTY = SUPPORTS_UNICODE ? "░" : ".";
-    public static final String SPINNER = SUPPORTS_UNICODE ? "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏" : "|/-\\";
+    public static final String PROGRESS_FULL = "#";
+    public static final String PROGRESS_PARTIAL = "-";
+    public static final String PROGRESS_EMPTY = ".";
+    public static final String SPINNER = "|/-\\";
     
     // Status indicators
-    public static final String ONLINE = SUPPORTS_UNICODE ? "🟢" : "[O]";
-    public static final String OFFLINE = SUPPORTS_UNICODE ? "🔴" : "[X]";
-    public static final String SYNC = SUPPORTS_UNICODE ? "🔄" : "[S]";
-    public static final String STAR = SUPPORTS_UNICODE ? "⭐" : "[*]";
-    public static final String FLAG = SUPPORTS_UNICODE ? "🚩" : "[F]";
+    public static final String ONLINE = "[O]";
+    public static final String OFFLINE = "[X]";
+    public static final String SYNC = "[S]";
+    public static final String STAR = "[*]";
+    public static final String FLAG = "[F]";
     
     // Productivity icons
-    public static final String TASK = SUPPORTS_UNICODE ? "📋" : "[T]";
-    public static final String PROJECT = SUPPORTS_UNICODE ? "📁" : "[P]";
-    public static final String DEADLINE = SUPPORTS_UNICODE ? "⏰" : "[D]";
-    public static final String PRIORITY_HIGH = SUPPORTS_UNICODE ? "🔥" : "[H]";
-    public static final String PRIORITY_MEDIUM = SUPPORTS_UNICODE ? "🟡" : "[M]";
-    public static final String PRIORITY_LOW = SUPPORTS_UNICODE ? "🟢" : "[L]";
+    public static final String TASK = "[T]";
+    public static final String PROJECT = "[P]";
+    public static final String DEADLINE = "[D]";
+    public static final String PRIORITY_HIGH = "[H]";
+    public static final String PRIORITY_MEDIUM = "[M]";
+    public static final String PRIORITY_LOW = "[L]";
+    
+    /**
+     * Get Unicode support status
+     */
+    public static boolean supportsUnicode() {
+        return false;
+    }
+    
+    /**
+     * Get detailed Unicode support information for debugging
+     */
+    public static String getUnicodeInfo() {
+        StringBuilder info = new StringBuilder();
+        info.append("Unicode Support: false").append("\n");
+        info.append("OS: ").append(System.getProperty("os.name")).append("\n");
+        info.append("File Encoding: ").append(System.getProperty("file.encoding")).append("\n");
+        info.append("TERM: ").append(System.getenv("TERM")).append("\n");
+        info.append("WT_SESSION: ").append(System.getenv("WT_SESSION")).append("\n");
+        info.append("VSCODE_INJECTION: ").append(System.getenv("VSCODE_INJECTION")).append("\n");
+        info.append("CONSOLE_CP: ").append(System.getenv("CONSOLE_CP")).append("\n");
+        info.append("Unicode Property: ").append(System.getProperty("unicode")).append("\n");
+        return info.toString();
+    }
 }
