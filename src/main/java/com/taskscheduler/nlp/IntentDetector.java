@@ -16,13 +16,14 @@ import opennlp.tools.tokenize.Tokenizer;
 public class IntentDetector {
     private static final Logger logger = Logger.getLogger(IntentDetector.class.getName());
     private final Tokenizer tokenizer;
-    
-    // Intent types
+      // Intent types
     public static final String INTENT_ADD = "add";
     public static final String INTENT_LIST = "list";
     public static final String INTENT_COMPLETE = "complete";
     public static final String INTENT_DELETE = "delete";
-    public static final String INTENT_HELP = "help";    public static final String INTENT_UNKNOWN = "unknown";
+    public static final String INTENT_HELP = "help";
+    public static final String INTENT_CLEAR = "clear";
+    public static final String INTENT_UNKNOWN = "unknown";
     
     // Keywords for email notifications
     private static final String[] EMAIL_KEYWORDS = {
@@ -48,10 +49,13 @@ public class IntentDetector {
         intentKeywords.put(INTENT_COMPLETE, Arrays.asList(
             "complete", "done", "finish", "mark", "completed", "finished", "check", "tick"
         ));
-        
-        intentKeywords.put(INTENT_DELETE, Arrays.asList(
-            "delete", "remove", "cancel", "clear", "drop"
+          intentKeywords.put(INTENT_DELETE, Arrays.asList(
+            "delete", "remove", "cancel", "drop"
         ));
+        
+        intentKeywords.put(INTENT_CLEAR, Arrays.asList(
+            "clear", "refresh", "clean", "cls", "reset", "wipe"
+        ));        
         
         intentKeywords.put(INTENT_HELP, Arrays.asList(
             "help", "how", "guide", "manual", "instructions", "usage"
@@ -90,10 +94,17 @@ public class IntentDetector {
             normalizedInput.startsWith("done ")) {
             return INTENT_COMPLETE;
         }
-        
-        if (normalizedInput.startsWith("delete ") || 
+          if (normalizedInput.startsWith("delete ") || 
             normalizedInput.startsWith("remove ")) {
             return INTENT_DELETE;
+        }
+        
+        if (normalizedInput.equals("clear") ||
+            normalizedInput.equals("refresh") ||
+            normalizedInput.equals("cls") ||
+            normalizedInput.contains("clear screen") ||
+            normalizedInput.contains("refresh screen")) {
+            return INTENT_CLEAR;
         }
         
         if (normalizedInput.equals("help")) {
@@ -203,20 +214,26 @@ public class IntentDetector {
             }
             else if (normalizedInput.startsWith("create ")) {
                 rawDescription = normalizedInput.substring(7).trim();
-            }
-            else if (normalizedInput.startsWith("remind ")) {
+            }            else if (normalizedInput.startsWith("remind ")) {
                 String desc = normalizedInput.substring(7).trim();
-                // Remove "me to" or "me about" common patterns
+                // More conservative processing - only remove "me to" if it's at the very beginning
                 if (desc.startsWith("me to ")) {
                     rawDescription = desc.substring(6).trim();
-                }
-                else if (desc.startsWith("me about ")) {
-                    rawDescription = desc.substring(9).trim();
-                }
-                else if (desc.startsWith("me ")) {
-                    rawDescription = desc.substring(3).trim();
-                }
-                else {
+                    
+                    // Remove email phrases from the task description
+                    for (String emailKeyword : EMAIL_KEYWORDS) {
+                        if (rawDescription.contains(emailKeyword + " me")) {
+                            rawDescription = rawDescription.replaceAll("(?i)\\b" + emailKeyword + "\\s+me\\b", "").trim();
+                        }
+                    }
+                } else if (desc.startsWith("me ")) {
+                    // Check if this is "me and ..." pattern, if so, include everything
+                    if (desc.startsWith("me and ")) {
+                        rawDescription = desc; // Keep the full description including "me and"
+                    } else {
+                        rawDescription = desc.substring(3).trim();
+                    }
+                } else {
                     rawDescription = desc;
                 }
             }

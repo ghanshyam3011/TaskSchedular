@@ -7,7 +7,7 @@
     <groupId>com.taskscheduler</groupId>
     <artifactId>task-scheduler</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -62,6 +62,19 @@
             <artifactId>opennlp-tools</artifactId>
             <version>2.2.0</version>
         </dependency>
+        <!-- Jansi for better unicode and ANSI support in terminals -->
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <!-- JUnit for unit testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -102,9 +115,8 @@
                 <version>3.1.0</version>
                 <configuration>
                     <mainClass>com.taskscheduler.Main</mainClass>
-                    <classpathScope>compile</classpathScope>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-</project> 
+</project>
