@@ -472,5 +472,139 @@
     "recurrenceCount": 0,
     "occurrencesGenerated": 0,
     "command": "powershell -Command \"Get-Date -Format \u0027FINAL TEST SUCCESS: yyyy-MM-dd HH:mm:ss\u0027 | Out-File -FilePath \u0027final_test_success.txt\u0027 -Encoding UTF8\""
+  },
+  {
+    "id": 39,
+    "title": "and nofity me to wake up @Cafe",
+    "completed": true,
+    "dueDate": "2025-06-19 11:12",
+    "tags": [],
+    "notified": false,
+    "reminderTime": 60,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "MEDIUM"
+  },
+  {
+    "id": 40,
+    "title": "and nofity me to wake up @Cafe urgent",
+    "completed": true,
+    "dueDate": "2025-06-19 11:12",
+    "tags": [],
+    "notified": false,
+    "reminderTime": 60,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "MEDIUM"
+  },
+  {
+    "id": 41,
+    "title": "remid me meeting with boss",
+    "completed": true,
+    "dueDate": "2025-06-19 11:17",
+    "tags": [],
+    "notified": false,
+    "reminderTime": 1,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "HIGH"
+  },
+  {
+    "id": 42,
+    "title": "schedule a low priority meeting with employee",
+    "completed": true,
+    "dueDate": "2025-06-19 11:19",
+    "tags": [],
+    "notified": false,
+    "reminderTime": 1,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "LOW"
+  },
+  {
+    "id": 43,
+    "title": "schedule online zoom meeting",
+    "completed": true,
+    "dueDate": "2025-06-19 11:23",
+    "tags": [],
+    "notified": false,
+    "reminderTime": 60,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "HIGH"
+  },
+  {
+    "id": 44,
+    "title": "schedule online zoom meeting",
+    "completed": true,
+    "dueDate": "2025-06-19 11:29",
+    "tags": [
+      "work"
+    ],
+    "notified": false,
+    "reminderTime": 60,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "HIGH"
+  },
+  {
+    "id": 45,
+    "title": "schedule online zoom meeting",
+    "completed": true,
+    "dueDate": "2025-06-19 11:29",
+    "tags": [
+      "home"
+    ],
+    "notified": false,
+    "reminderTime": 60,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "HIGH"
+  },
+  {
+    "id": 46,
+    "title": "test-email",
+    "completed": false,
+    "dueDate": "2025-06-29 12:00",
+    "tags": [],
+    "notified": false,
+    "reminderTime": 60,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "MEDIUM"
+  },
+  {
+    "id": 47,
+    "title": "submit report",
+    "completed": true,
+    "dueDate": "2025-06-28 22:34",
+    "tags": [],
+    "notified": false,
+    "reminderTime": 1,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "MEDIUM"
+  },
+  {
+    "id": 48,
+    "title": "meeting with her",
+    "completed": true,
+    "dueDate": "2025-06-28 22:45",
+    "tags": [],
+    "notified": false,
+    "reminderTime": 1,
+    "isRecurring": false,
+    "recurrenceCount": 0,
+    "occurrencesGenerated": 0,
+    "priority": "HIGH"
   }
 ]

@@ -66,7 +66,19 @@
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
-            <version>2.4.0</version>
+            <version>1.18</version>
+        </dependency>
+        <!-- Text-IO for interactive text user interfaces -->
+        <dependency>
+            <groupId>org.beryx</groupId>
+            <artifactId>text-io</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <!-- Emoji Java for better emoji support -->
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>emoji-java</artifactId>
+            <version>5.1.1</version>
         </dependency>
         <!-- JUnit for unit testing -->
         <dependency>

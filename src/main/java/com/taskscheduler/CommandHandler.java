@@ -111,6 +111,9 @@ public class CommandHandler {
             } catch (RuntimeException e) {
                 System.out.println("Runtime error: " + e.getMessage());
             }
+            
+            // Ensure proper spacing after each command execution
+            com.taskscheduler.ui.UIManager.ensureCommandSpacing();
         }
     }
 
@@ -118,6 +121,12 @@ public class CommandHandler {
         if (command.equalsIgnoreCase("exit")) {
             System.out.println("Shutting down Task Scheduler...");
             reminderManager.shutdown();
+            return;
+        }
+        
+        // Add new menu command to launch the interactive UI
+        if (command.trim().equalsIgnoreCase("menu")) {
+            handleInteractiveMenu();
             return;
         }
 
@@ -173,22 +182,28 @@ public class CommandHandler {
     
     /**
      * Executes a command after it has been processed
-     */
-    private void executeCommand(String command) {
+     */    private void executeCommand(String command) {
         try {            if (command.equalsIgnoreCase("help")) {
                 com.taskscheduler.ui.UIManager.displayHelp();
+            } else if (command.equalsIgnoreCase("clear") || command.equalsIgnoreCase("refresh") || command.equalsIgnoreCase("cls") || 
+                    command.toLowerCase().contains("clear screen") || command.toLowerCase().contains("refresh screen")) {
+                clearScreen();
+                System.out.println("Screen refreshed!");
             } else if (command.equalsIgnoreCase("suggestions")) {
                 boolean currentState = ConfigManager.isSmartSuggestionsEnabled();
                 ConfigManager.setSmartSuggestionsEnabled(!currentState);
-                System.out.println("Smart suggestions are now " + (!currentState ? "enabled" : "disabled"));            } else if (command.startsWith("email-notification ")) {
+                System.out.println("Smart suggestions are now " + (!currentState ? "enabled" : "disabled"));} else if (command.startsWith("email-notification ")) {
                 // This is a system command to set the default email address
                 String email = command.substring("email-notification ".length()).trim();
                 System.out.println("Setting up email notification with: " + email);
-                handleEmailNotification(email);
-            } else if (command.equalsIgnoreCase("test-email")) {
+                handleEmailNotification(email);            } else if (command.equalsIgnoreCase("test-email")) {
                 // Test email notification functionality
                 System.out.println("Testing email notification system...");
                 EmailTester.testEmailNotification();
+            } else if (command.equalsIgnoreCase("debug")) {
+                // Display debug information including Unicode support
+                System.out.println("\n" + com.taskscheduler.ui.Colors.CYAN + "Debug Information:" + com.taskscheduler.ui.Colors.RESET);
+                System.out.println(com.taskscheduler.ui.Icons.getUnicodeInfo());
             } else if (command.startsWith("add ")) {
                 String taskPart = command.substring(4).trim();
                 String[] parts = taskPart.split(" --");
@@ -265,7 +280,16 @@ public class CommandHandler {
                 }
                 int taskId = Integer.parseInt(parts[0]);
                 String timeStr = parts[1].toLowerCase();
-                setReminderTime(taskId, timeStr);            } else {
+                setReminderTime(taskId, timeStr);
+            } else if (command.equalsIgnoreCase("debug") || command.equalsIgnoreCase("unicode-info")) {
+                // Show Unicode support and terminal information
+                com.taskscheduler.ui.UIManager.displayInfo("Terminal and Unicode Information:");
+                System.out.println(com.taskscheduler.ui.Icons.getUnicodeInfo());
+                System.out.println("Test Unicode Characters:");
+                System.out.println("  Box: " + com.taskscheduler.ui.Icons.TOP_LEFT + com.taskscheduler.ui.Icons.HORIZONTAL + com.taskscheduler.ui.Icons.TOP_RIGHT);
+                System.out.println("  Emojis: " + com.taskscheduler.ui.Icons.SUCCESS + " " + com.taskscheduler.ui.Icons.CLOCK + " " + com.taskscheduler.ui.Icons.PRIORITY_HIGH);
+                System.out.println("  Icons: " + com.taskscheduler.ui.Icons.COMPLETED + " " + com.taskscheduler.ui.Icons.PENDING + " " + com.taskscheduler.ui.Icons.WARNING);
+            } else {
                 com.taskscheduler.ui.UIManager.displayError("Unknown command. Type 'help' for available commands.");
             }
         } catch (NumberFormatException e) {
@@ -601,6 +625,21 @@ public class CommandHandler {
                     } else {
                         System.out.println("Warning: Email notification requested but no default email is set.");
                         System.out.println("Use 'email-notification <your-email>' to set a default email address.");
+                    }                } else if (part.startsWith("--priority ")) {
+                    String priorityStr = part.substring("--priority ".length()).trim();
+                    try {
+                        Priority priority = Priority.valueOf(priorityStr.toUpperCase());
+                        task.setPriority(priority);
+                        System.out.println("Setting priority: " + priority.getDisplayName());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid priority: " + priorityStr + ". Valid values: low, medium, high, urgent, critical");
+                    }
+                } else if (part.startsWith("--") && !part.contains(" ")) {
+                    // Handle standalone tags like --work, --personal, --urgent, etc.
+                    String tag = part.substring(2); // Remove the --
+                    if (!tag.isEmpty() && !isKnownParameter(tag)) {
+                        task.addTag(tag);
+                        System.out.println("Adding tag: " + tag);
                     }
                 }
             }
@@ -627,12 +666,10 @@ public class CommandHandler {
      * Checks if the input is already a structured command (not natural language)
      */
     private boolean isStructuredCommand(String input) {
-        String trimmed = input.trim().toLowerCase();
-        
-        // Commands that start with these keywords are likely structured commands
+        String trimmed = input.trim().toLowerCase();        // Commands that start with these keywords are likely structured commands
         String[] commandPrefixes = {
-            "add \"", "list", "complete ", "delete ", "help", "exit", "menu", 
-            "due ", "recurring ", "email-notification ", "suggestions"
+            "add \"", "list", "complete ", "delete ", "help", "exit", 
+            "due ", "recurring ", "email-notification ", "suggestions", "clear", "refresh", "cls"
         };
         
         for (String prefix : commandPrefixes) {
@@ -669,10 +706,139 @@ public class CommandHandler {
         help.append("  tag <id> <tag1> [tag2 tag3 ...] - Add tags to a task\n");
         help.append("  untag <id> <tag1> [tag2 tag3 ...] - Remove tags from a task\n");        help.append("  reminder <id> <time>            - Set reminder for a task (e.g., 30m or 2h)\n");
         help.append("  email-notification <email>      - Set email for task reminders\n");
-        help.append("  test-email                      - Test email notification system\n");
         help.append("  suggestions                     - Toggle smart command suggestions\n");
+        help.append("  clear/refresh/cls               - Clear the screen and refresh display\n");
         help.append("  help                            - Show this help message\n");
         help.append("  exit                            - Exit the program");
         System.out.println(help.toString());
+    }
+    
+    /**
+     * Checks if a parameter name is a known system parameter (not a tag)
+     */
+    private boolean isKnownParameter(String param) {
+        String[] knownParams = {
+            "notify-email", "repeat", "end", "reminder", "email", "priority", "tag"
+        };
+        
+        for (String known : knownParams) {
+            if (param.equals(known)) {
+                return true;
+            }
+        }        return false;
+    }
+    
+    /**
+     * Clears the terminal screen
+     */
+    private void clearScreen() {
+        try {
+            String operatingSystem = System.getProperty("os.name");
+            
+            if (operatingSystem.contains("Windows")) {
+                // For Windows
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                // For Unix/Linux/Mac
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+              // Print the application header again
+            System.out.println();
+            System.out.println(com.taskscheduler.ui.Banner.createWelcomeBanner());
+            System.out.println();
+        } catch (Exception e) {
+            // If the above methods don't work, try using ANSI escape codes
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            
+            // Print some newlines as a fallback
+            for (int i = 0; i < 50; i++) {
+                System.out.println();
+            }
+              // Print the application header again
+            System.out.println(com.taskscheduler.ui.Banner.createWelcomeBanner());
+            System.out.println();
+        }
+    }
+
+    private void handleInteractiveMenu() {
+        try {
+            // Use our enhanced interactive UI
+            String selection = com.taskscheduler.ui.InteractiveUI.showMainMenu();
+            
+            if (selection.contains("List all tasks")) {
+                handleCommands("list");
+            } 
+            else if (selection.contains("List upcoming tasks")) {
+                handleCommands("list upcoming");
+            }
+            else if (selection.contains("List overdue tasks")) {
+                handleCommands("list overdue");
+            }
+            else if (selection.contains("Add new task")) {
+                String[] taskData = com.taskscheduler.ui.InteractiveUI.createNewTaskInteractive();
+                
+                // Format the command based on the interactive input
+                StringBuilder cmd = new StringBuilder("add \"");
+                cmd.append(taskData[0]).append("\""); // Title
+                
+                if (!taskData[1].isEmpty()) {
+                    cmd.append(" due ").append(taskData[1]); // Due date
+                }
+                
+                cmd.append(" --priority ").append(taskData[2].toLowerCase()); // Priority
+                
+                // Add tags if any
+                if (!taskData[3].isEmpty()) {
+                    String[] tags = taskData[3].split(",");
+                    for (String tag : tags) {
+                        cmd.append(" --tag ").append(tag.trim());
+                    }
+                }
+                
+                // Execute the command
+                handleCommands(cmd.toString());
+                com.taskscheduler.ui.InteractiveUI.notify("Task created successfully!", false);
+            }
+            else if (selection.contains("Complete a task")) {
+                // Show all tasks first
+                handleCommands("list");
+                
+                // Get task ID to complete
+                String taskIdStr = org.beryx.textio.TextIoFactory.getTextIO().newStringInputReader()
+                        .withPattern("\\d+")
+                        .read("\nEnter the ID of the task to complete");
+                
+                handleCommands("complete " + taskIdStr);
+                com.taskscheduler.ui.InteractiveUI.notify("Task marked as complete!", false);
+            }
+            else if (selection.contains("Delete a task")) {
+                // Show all tasks first
+                handleCommands("list");
+                
+                // Get task ID to delete
+                String taskIdStr = org.beryx.textio.TextIoFactory.getTextIO().newStringInputReader()
+                        .withPattern("\\d+")
+                        .read("\nEnter the ID of the task to delete");
+                
+                // Confirm deletion
+                if (com.taskscheduler.ui.InteractiveUI.confirm("Are you sure you want to delete task #" + taskIdStr + "?")) {
+                    handleCommands("delete " + taskIdStr);
+                    com.taskscheduler.ui.InteractiveUI.notify("Task deleted successfully!", false);
+                }
+            }
+            else if (selection.contains("Settings")) {
+                handleCommands("settings");
+            }
+            else if (selection.contains("Help")) {
+                showHelp();
+            }
+            // Exit option returns to normal command mode
+            
+        } catch (Exception e) {
+            System.out.println("Error in interactive menu: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

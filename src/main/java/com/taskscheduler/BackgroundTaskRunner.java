@@ -30,22 +30,28 @@ public class BackgroundTaskRunner {
         int executedTasks = 0;
         LocalDateTime now = LocalDateTime.now();
         LOGGER.info("BackgroundTaskRunner: Checking for due tasks at " + now);
-        LOGGER.info("BackgroundTaskRunner: Found " + tasks.size() + " total tasks in the system");
-        for (Task task : tasks) {
-            if (!task.isCompleted() && task.getDueDate() != null) {                // Check if task is due (within the last 10 minutes or due in the next 5 minutes)
+        LOGGER.info("BackgroundTaskRunner: Found " + tasks.size() + " total tasks in the system");        for (Task task : tasks) {
+            if (!task.isCompleted() && task.getDueDate() != null) {
+                // Check if task is due (within the last 30 minutes or due in the next 10 minutes)
                 // This gives a wider window to catch tasks that might be missed
                 LocalDateTime dueTime = task.getDueDate();
-                LocalDateTime tenMinutesAgo = now.minusMinutes(10);
-                LocalDateTime fiveMinutesAhead = now.plusMinutes(5);
+                LocalDateTime thirtyMinutesAgo = now.minusMinutes(30);
+                LocalDateTime tenMinutesAhead = now.plusMinutes(10);
                 
-                if ((dueTime.isAfter(tenMinutesAgo) && dueTime.isBefore(fiveMinutesAhead)) || dueTime.equals(now)) {
-                    LOGGER.info("BackgroundTaskRunner: Executing task: " + task.getTitle());
+                LOGGER.info("BackgroundTaskRunner: Checking task " + task.getId() + ": " + task.getTitle());
+                LOGGER.info("BackgroundTaskRunner: Task due time: " + dueTime);
+                LOGGER.info("BackgroundTaskRunner: Current time: " + now);
+                LOGGER.info("BackgroundTaskRunner: Time window: " + thirtyMinutesAgo + " to " + tenMinutesAhead);
+                LOGGER.info("BackgroundTaskRunner: Task completed: " + task.isCompleted());
+                LOGGER.info("BackgroundTaskRunner: Task has email: " + (task.getEmail() != null ? task.getEmail() : "NO EMAIL"));
+                
+                if ((dueTime.isAfter(thirtyMinutesAgo) && dueTime.isBefore(tenMinutesAhead)) || dueTime.equals(now)) {
+                    LOGGER.info("BackgroundTaskRunner: *** EXECUTING TASK: " + task.getTitle() + " ***");
                     
                     // Execute the task directly without using TaskJob.execute()
                     executeTask(task);
                     executedTasks++;
-                    
-                    // Handle recurring tasks
+                      // Handle recurring tasks
                     if (task.isRecurring()) {
                         // Fixed: Use scheduleTask instead of scheduleRecurringTask
                         scheduler.scheduleTask(task);
@@ -54,6 +60,15 @@ public class BackgroundTaskRunner {
                         task.setCompleted(true);
                         taskManager.saveTasks();
                     }
+                } else {
+                    LOGGER.info("BackgroundTaskRunner: Task " + task.getId() + " not in due window - skipping");
+                }
+            } else {
+                if (task.isCompleted()) {
+                    LOGGER.info("BackgroundTaskRunner: Task " + task.getId() + " is completed - skipping");
+                }
+                if (task.getDueDate() == null) {
+                    LOGGER.info("BackgroundTaskRunner: Task " + task.getId() + " has no due date - skipping");
                 }
             }
         }
@@ -113,17 +128,21 @@ public class BackgroundTaskRunner {
                 LOGGER.info("Task executed successfully. Output saved to: " + outputFile);
             } else {
                 LOGGER.warning("Task execution completed with exit code: " + exitCode);
-            }
-              // Handle email notification if configured
+            }            // Handle email notification if configured
+            String taskEmail = task.getEmail();
             String userEmail = ConfigManager.getEmail();
-            if (userEmail != null && !userEmail.isEmpty()) {
+            String emailToUse = taskEmail != null ? taskEmail : userEmail;
+            
+            if (emailToUse != null && !emailToUse.trim().isEmpty()) {
                 try {
-                    // Use the sendTaskReminder method - it's not ideal but we can adapt it
-                    EmailNotifier.sendTaskReminder(userEmail, task, Duration.ofMinutes(0));
-                    LOGGER.info("Email notification sent for task: " + task.getTitle());
+                    System.out.println("Sending email notification for task: " + task.getTitle());
+                    EmailNotifier.sendTaskReminder(emailToUse, task, Duration.ofMinutes(0));
+                    System.out.println("Email notification sent successfully to: " + emailToUse);
                 } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Failed to send email notification", e);
+                    System.out.println("Failed to send email notification: " + e.getMessage());
                 }
+            } else {
+                System.out.println("No email configured for notifications.");
             }
             
         } catch (Exception e) {

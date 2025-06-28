@@ -149,14 +149,26 @@ public class Main {
             }
         }
         
-        // Start command handler
+        // Initialize Jansi for better Unicode support
+        org.fusesource.jansi.AnsiConsole.systemInstall();
+        
+        // Start command handler with enhanced UI
         CommandHandler commandHandler = new CommandHandler(taskManager);
         
         // Add shutdown hook to gracefully stop the scheduler
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Shutting down scheduler...");
             scheduler.shutdown();
+            org.fusesource.jansi.AnsiConsole.systemUninstall();
         }));
+        
+        // Show the welcome screen with the new animated UI
+        try {
+            com.taskscheduler.ui.InteractiveUI.showWelcome();
+        } catch (Exception e) {
+            // Fallback to standard welcome if any issues with the fancy UI
+            com.taskscheduler.ui.UIManager.displayWelcome();
+        }
         
         commandHandler.start();
     }

@@ -4,11 +4,11 @@ package com.taskscheduler;
  * Priority levels for tasks
  */
 public enum Priority {
-    LOW(1, "Low", "🟢"),
-    MEDIUM(2, "Medium", "🟡"), 
-    HIGH(3, "High", "🟠"),
-    URGENT(4, "Urgent", "🔴"),
-    CRITICAL(5, "Critical", "🚨");
+    LOW(1, "Low", "●"),
+    MEDIUM(2, "Medium", "●"), 
+    HIGH(3, "High", "●"),
+    URGENT(4, "Urgent", "●"),
+    CRITICAL(5, "Critical", "●");
     
     private final int level;
     private final String displayName;
@@ -30,9 +30,7 @@ public enum Priority {
     
     public String getIcon() {
         return icon;
-    }
-    
-    public String getColoredDisplay() {
+    }    public String getColoredDisplay() {
         switch (this) {
             case LOW:
                 return "\033[0;32m" + icon + " " + displayName + "\033[0m"; // Green
