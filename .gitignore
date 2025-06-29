@@ -6,7 +6,6 @@ pom.xml.versionsBackup
 pom.xml.next
 release.properties
 dependency-reduced-pom.xml
-maven.zip
 
 # IDE files
 .idea/
@@ -20,8 +19,6 @@ maven.zip
 *.class
 bin/
 temp_classes/
-*.jar
-lib/
 
 # Logs
 *.log
@@ -31,17 +28,6 @@ task_checker_output.log
 task_output.txt
 manual_test_output.txt
 final_output.txt
-
-# Backup & temporary files
-*.bak
-*.backup
-*.back
-*.swp
-*.tmp
-*~
-
-# Command history and runtime files
-command_history.json
 
 # Test files
 *_test_result.txt

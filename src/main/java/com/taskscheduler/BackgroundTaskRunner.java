@@ -32,20 +32,28 @@ public class BackgroundTaskRunner {
         LOGGER.info("BackgroundTaskRunner: Checking for due tasks at " + now);
         LOGGER.info("BackgroundTaskRunner: Found " + tasks.size() + " total tasks in the system");        for (Task task : tasks) {
             if (!task.isCompleted() && task.getDueDate() != null) {
-                // Check if task is due (within the last 30 minutes or due in the next 10 minutes)
-                // This gives a wider window to catch tasks that might be missed
+                // Check if task is due - we want to be more precise with execution timing
+                // Only execute tasks that are:
+                // 1. Due right now (or within 1 minute in the past)
+                // 2. Overdue but not executed yet (within reasonable bounds)
                 LocalDateTime dueTime = task.getDueDate();
+                LocalDateTime oneMinuteAgo = now.minusMinutes(1);
                 LocalDateTime thirtyMinutesAgo = now.minusMinutes(30);
-                LocalDateTime tenMinutesAhead = now.plusMinutes(10);
                 
                 LOGGER.info("BackgroundTaskRunner: Checking task " + task.getId() + ": " + task.getTitle());
                 LOGGER.info("BackgroundTaskRunner: Task due time: " + dueTime);
                 LOGGER.info("BackgroundTaskRunner: Current time: " + now);
-                LOGGER.info("BackgroundTaskRunner: Time window: " + thirtyMinutesAgo + " to " + tenMinutesAhead);
+                LOGGER.info("BackgroundTaskRunner: Time window: Current time (± 1 minute) or overdue");
                 LOGGER.info("BackgroundTaskRunner: Task completed: " + task.isCompleted());
                 LOGGER.info("BackgroundTaskRunner: Task has email: " + (task.getEmail() != null ? task.getEmail() : "NO EMAIL"));
                 
-                if ((dueTime.isAfter(thirtyMinutesAgo) && dueTime.isBefore(tenMinutesAhead)) || dueTime.equals(now)) {
+                // Only execute if:
+                // - Task is due right now (within 1 minute precision)
+                // - OR task is overdue (within last 30 minutes) but not executed yet
+                boolean isDueNow = (dueTime.isAfter(oneMinuteAgo) && dueTime.isBefore(now.plusMinutes(1))) || dueTime.equals(now);
+                boolean isRecentlyOverdue = dueTime.isAfter(thirtyMinutesAgo) && dueTime.isBefore(now);
+                
+                if (isDueNow || isRecentlyOverdue) {
                     LOGGER.info("BackgroundTaskRunner: *** EXECUTING TASK: " + task.getTitle() + " ***");
                     
                     // Execute the task directly without using TaskJob.execute()
