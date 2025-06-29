@@ -1,13 +1,13 @@
-# 🧠 NeuroTask: Intelligent Task Management System
+# 🧠 NeuroTask: Task Management System
 
 <div align="center">
   
-![NeuroTask Banner](https://img.shields.io/badge/NeuroTask-Intelligent-purple?style=for-the-badge&logo=java&logoColor=white)
+![NeuroTask Banner](https://img.shields.io/badge/NeuroTask-Task%20Manager-blue?style=for-the-badge&logo=java&logoColor=white)
 
 </div>
 
 <p align="center">
-  <b>An AI-driven task management system with intelligent scheduling, automated execution, and smart notifications</b>
+  <b>A robust task management system with background execution, command automation, and email notifications</b>
 </p>
 
 <p align="center">
@@ -24,7 +24,6 @@
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Java](https://img.shields.io/badge/Java-17%2B-orange)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightblue)
-![Intelligence](https://img.shields.io/badge/AI-Powered-blueviolet)
 
 </div>
 
@@ -32,14 +31,14 @@
 
 ## 🌟 Key Features
 
-- **Neural Language Processing** for intuitive task creation and understanding
-- **Intelligent Scheduling Algorithm** that learns from your patterns
-- **Cognitive Priority Management** with smart categorization (High, Medium, Low)
-- **Autonomous Background Execution System** that runs independently
-- **Windows Service Integration** for system-level intelligence
-- **Smart Email Notifications** with contextual awareness
-- **Command Execution Engine** to automate workflows and scripts
-- **Adaptive Task Analytics** with progress visualization
+- **Natural Language Task Creation** - create tasks using plain English phrases
+- **Priority Management System** with categorization (High, Medium, Low)
+- **Background Task Execution** that runs even when the app is closed
+- **Windows Service Integration** for automatic startup with your system
+- **Email Notifications** when tasks are completed or due soon
+- **Command Execution** capability to run scripts or programs
+- **Task Progress Tracking** with statistics and visualization
+- **Persistent Task Storage** in JSON format
 
 ## 🛠️ Installation
 
@@ -68,16 +67,15 @@ Run the NeuroTask system using the provided launcher:
 .\run-task-scheduler.bat
 ```
 
-### Neural Command Interface
-- `add` - Create a new intelligent task
-- `list` - Visualize your task network
+### Basic Commands
+- `add` - Create a new task
+- `list` - Show all tasks
 - `done` - Mark a task as complete
-- `delete` - Remove a task from the system
-- `analyze` - Get insights on your task patterns
-- `email` - Configure smart notifications
-- `quit` - Exit the neural interface
+- `delete` - Remove a task
+- `email` - Configure email notifications
+- `quit` - Exit the application
 
-### Creating Tasks with Neural Language Processing
+### Creating Tasks with Natural Language
 ```
 add Send project report to John by tomorrow at 5pm
 add Buy groceries on Saturday morning high
@@ -225,7 +223,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 <div align="center">
-  <sub>Built with ❤️ and 🧠 by NeuroTask Team</sub>
+  <sub>Built with ❤️ by NeuroTask Team</sub>
 </div>
 
 > **Security Note**: For Gmail, use an App Password instead of your regular password. 
