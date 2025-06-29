@@ -1,256 +1,102 @@
-# 🧠 NeuroTask: Task Management System
+# Task Scheduler
 
-<div align="center">
-  
-![NeuroTask Banner](https://img.shields.io/badge/NeuroTask-Task%20Manager-blue?style=for-the-badge&logo=java&logoColor=white)
+A robust command-line task management application written in Java with background task execution capabilities.
 
-</div>
+## Features
+- Create, read, update, and delete tasks
+- Store tasks with title, description, and due date
+- Command-line interface for task management
+- Persistent storage of tasks in JSON format
+- Background task execution (even when main application is closed)
+- Email notifications for task completion
+- Automated task scheduling with custom timing options
 
-<p align="center">
-  <b>A robust task management system with background execution, command automation, and email notifications</b>
-</p>
+## Project Structure
+```
+TaskScheduler/
+├── src/main/java/com/taskscheduler/  # Source code
+│   ├── Main.java                    # Application entry point
+│   ├── Task.java                    # Task model class
+│   ├── TaskManager.java             # Task management logic
+│   ├── CommandHandler.java          # Command processing
+│   ├── BackgroundTaskRunner.java    # Background task execution
+│   ├── EmailNotifier.java           # Email notification service
+│   └── ConfigManager.java           # Configuration management
+├── simple_scheduler.ps1             # PowerShell background scheduler
+├── start_scheduler.bat              # Script to start background scheduler
+├── run_task_checker.bat             # Task execution batch file
+├── task_outputs/                    # Task execution output files
+└── tasks.json                       # Task data storage (JSON format)
+```
 
-<p align="center">
-  <a href="#-key-features">Features</a> •
-  <a href="#%EF%B8%8F-installation">Installation</a> •
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-background-service">Background Service</a> •
-  <a href="#-command-execution">Command Execution</a> •
-  <a href="#-email-notifications">Email Notifications</a>
-</p>
+## Setup and Running
 
-<div align="center">
-
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Java](https://img.shields.io/badge/Java-17%2B-orange)
-![Platform](https://img.shields.io/badge/Platform-Windows-lightblue)
-
-</div>
-
----
-
-## 🌟 Key Features
-
-- **Natural Language Task Creation** - create tasks using plain English phrases
-- **Priority Management System** with categorization (High, Medium, Low)
-- **Background Task Execution** that runs even when the app is closed
-- **Windows Service Integration** for automatic startup with your system
-- **Email Notifications** when tasks are completed or due soon
-- **Command Execution** capability to run scripts or programs
-- **Task Progress Tracking** with statistics and visualization
-- **Persistent Task Storage** in JSON format
-
-## 🛠️ Installation
-
-### Prerequisites
-- Java JDK 11 or higher
-- Windows OS (for background service functionality)
-- PowerShell 5.0 or higher
-
-### Setup Process
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/TaskScheduler.git
-   cd TaskScheduler
+### Basic Setup
+1. Ensure you have Java installed on your system
+2. Compile the application:
+   ```
+   javac -d classes -cp . src/main/java/com/taskscheduler/*.java
+   ```
+3. Run the application:
+   ```
+   java -cp classes com.taskscheduler.Main
    ```
 
-2. **Build the project**
-   ```bash
-   mvn clean package
-   ```
+### Email Notifications Setup
+To enable email notifications:
 
-## 🚀 Quick Start
-
-Run the NeuroTask system using the provided launcher:
-```bash
-.\run-task-scheduler.bat
-```
-
-### Basic Commands
-- `add` - Create a new task
-- `list` - Show all tasks
-- `done` - Mark a task as complete
-- `delete` - Remove a task
-- `email` - Configure email notifications
-- `quit` - Exit the application
-
-### Creating Tasks with Natural Language
-```
-add Send project report to John by tomorrow at 5pm
-add Buy groceries on Saturday morning high
-add Call dentist office on Monday at 9am with reminder 30 minutes before
-```
-
-## 🔄 Background Service
-
-### Automatic Task Execution
-The Task Scheduler can run as a Windows Service, executing tasks in the background even when:
-- The main application is closed
-- Your system restarts
-- You're logged out
-
-### Setup as Windows Service
-
-1. **Run the setup script with administrator privileges**
-   ```powershell
-   # Run PowerShell as Administrator
-   cd path\to\TaskScheduler
-   .\setup_background_service.ps1
-   ```
-
-2. **Verify the service**
-   - Open Services management console (`services.msc`)
-   - Look for "Task Scheduler Background Service"
-   - Status should show as "Running"
-
-### Managing the Service
-```powershell
-# Stop the service
-nssm stop TaskScheduler
-
-# Start the service
-nssm start TaskScheduler
-
-# Remove the service
-nssm remove TaskScheduler confirm
-```
-
-## 💻 Command Execution
-
-Execute system commands or run scripts automatically when tasks are due:
-
-### Adding Tasks with Commands
-```
-add Run database backup at 11pm daily command="c:\scripts\backup.bat"
-add Update software on Sunday 10am command="powershell -File c:\update.ps1"
-```
-
-The command will execute automatically when the task is due, even in background mode.
-
-## 📧 Email Notifications
-
-### Configuration
-1. Edit `user-config.json` with your email address:
+1. Set your email address in `user-config.json`:
    ```json
    {
      "email": "your.email@example.com"
    }
    ```
 
-2. Configure email credentials in `email-config.json`:
-   ```json
-   {
-     "username": "your.email@example.com",
-     "password": "your-app-password-here", 
-     "smtpHost": "smtp.gmail.com",
-     "smtpPort": "587"
+2. Edit the `run_task_checker.bat` file to add your email credentials:
+   ```bat
+   set EMAIL_USERNAME=your.email@example.com
+   set EMAIL_PASSWORD=your-app-password-here
+   ```
+   
+   Note: For Gmail, you'll need to use an App Password rather than your regular password.
+   
+3. Email notifications will be sent when tasks are executed by the background scheduler
    }
    ```
 
-> **Security Note**: For Gmail, use an App Password instead of your regular password. 
-> Go to Google Account → Security → App passwords to generate one.
+2. Configure email credentials in `run_task_checker.bat`:
+   ```bat
+   set EMAIL_USERNAME=your.email@example.com
+   set EMAIL_PASSWORD=your-app-password-here
+   ```
 
-### Notification Types
-- **Task Due Soon** - Get reminders before tasks are due
-- **Task Execution** - Notifications when background tasks execute
-- **Task Completion** - Confirmation of completed tasks
-- **System Status** - Service start/stop notifications
+3. For Gmail users, you'll need to create an App Password:
+   - Go to your Google Account settings
+   - Navigate to Security > App passwords
+   - Create a new app password for "Mail" and use it as your EMAIL_PASSWORD
 
-## 📊 Task Analytics & Monitoring
+## Background Task Execution
 
-Track your productivity and task completion with built-in analytics:
+This Task Scheduler can run in the background and execute tasks even when the main application is closed. The background execution system consists of:
 
-- **Task Summary** - Overview of completed, pending, and overdue tasks
-- **Progress Tracking** - Visual representation of your productivity
-- **Log Files** - Detailed logs for troubleshooting:
-  - `scheduler_log.txt` - Main application logs
-  - `task_checker_log.txt` - Background execution logs
-  - `task_outputs/` - Individual task execution results
+1. **PowerShell Scheduler (`simple_scheduler.ps1`)**: Runs every minute to check for due tasks
+2. **Launcher Script (`start_scheduler.bat`)**: Starts the background scheduler
+3. **Task Checker (`run_task_checker.bat`)**: Executes due tasks through the Java application
 
-## 🔍 Monitoring
+### Starting the Background Scheduler
 
-### Task Execution Results
-Each executed task generates an output file in the `task_outputs/` directory:
-```
-task_outputs/
-├── task_1_20250617_173010.txt
-├── task_12_20250518_133200.txt
-└── task_25_20250531_230200.txt
-```
+To start the background task scheduler:
 
-### Command Output
-Commands executed by tasks produce output files that capture:
-- Standard output and error streams
-- Exit codes
-- Execution duration
-- Any errors encountered
+1. Run the `start_scheduler.bat` file:
+   ```
+   .\start_scheduler.bat
+   ```
 
-## 🛡️ Security Features
+2. The scheduler will start in a console window and begin checking for due tasks every minute.
+3. You can close the main application, and tasks will continue to execute at their scheduled times.
+4. Email notifications will be sent upon task completion (if configured).
 
-- **Encrypted Credentials** - Email passwords are never stored in plain text
-- **Access Control** - Service runs with limited privileges
-- **Error Handling** - Robust error handling prevents system crashes
-
-## ⚙️ Advanced Configuration
-
-### Custom Timing Options
-```
-# Check for tasks every 60 seconds
-$CHECK_INTERVAL = 60
-
-# Set task execution window (in seconds)
-$EXECUTION_WINDOW = 60
-```
-
-### Email Templates
-Customize email notifications by editing template files in the `email-templates/` directory.
-
-## 📚 Additional Documentation
-
-For more detailed information, refer to these additional guides:
-
-- [Background Service Setup Guide](BACKGROUND_SERVICE_GUIDE.md)
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to submit issues or pull requests.
-
-## 📜 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-<div align="center">
-  <sub>Built with ❤️ by NeuroTask Team</sub>
-</div>
-
-> **Security Note**: For Gmail, use an App Password instead of your regular password. 
-> Go to Google Account → Security → App passwords to generate one.
-
-### Notification Types
-- **Task Due Soon** - Get reminders before tasks are due
-- **Task Execution** - Notifications when background tasks execute
-- **Task Completion** - Confirmation of completed tasks
-- **System Status** - Service start/stop notifications
-
-## 📂 Project Structure
-
-```
-TaskScheduler/
-├── src/                            # Source code
-│   └── main/java/com/taskscheduler/
-│       ├── Main.java               # Application entry point
-│       ├── BackgroundTaskRunner.java # Background execution engine
-│       ├── CommandHandler.java     # Command processing
-│       ├── EmailNotifier.java      # Email notifications
-│       └── ui/                     # User interface components
-├── run_task_checker.bat            # Background task execution script
-├── simple_scheduler.ps1            # PowerShell task checker loop
-├── setup_background_service.ps1    # Windows service setup
-├── BACKGROUND_SERVICE_GUIDE.md     # Detailed service documentation
-└── tasks.json                      # Task storage (JSON)
+### Logs and Monitoring
 
 Background task execution generates several log files:
 
@@ -272,3 +118,49 @@ The application supports the following commands:
 - `email-notification` - Configure email notifications
 - `help` - Show available commands
 - `exit` - Exit the application
+
+## 🐳 Docker Support
+
+Run NeuroTask anywhere without worrying about dependencies or environment setup.
+
+### Prerequisites
+- Docker installed on your system ([Get Docker](https://docs.docker.com/get-docker/))
+
+### Quick Start with Docker
+
+1. **Build the Docker image:**
+   ```bash
+   docker build -t neurotask .
+   ```
+
+2. **Run the container:**
+   ```bash
+   docker run -it neurotask
+   ```
+
+### Using Docker Compose (Recommended)
+
+For easier management with persistent data:
+
+1. **Start the application:**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **View logs:**
+   ```bash
+   docker-compose logs -f
+   ```
+
+3. **Stop the application:**
+   ```bash
+   docker-compose down
+   ```
+
+### Benefits of Containerization
+
+- **Consistent Environment**: Runs exactly the same way on any system
+- **Zero Dependencies**: No need to install Java or configure environment variables
+- **Portable**: Easy to ship and deploy anywhere
+- **Isolated**: Container keeps the application self-contained
+- **Scalable**: Ready for cloud deployment and orchestration

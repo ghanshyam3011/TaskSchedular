@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Logs
+*.log
+scheduler_log.txt
+task_checker_log.txt
+task_checker_output.log
+task_output.txt
+manual_test_output.txt
+final_output.txt
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Test files
+*_test_result.txt
+*_test_success.txt
+*test.txt
+*success.txt
+output.txt
+background_task_test.txt
+background_test_result.txt
+service_test.txt
+timing_test_result.txt
+
+# Temp/build files
+temp_classes/
+target/classes/
+target/generated-sources/
+target/generated-test-sources/
+target/maven-archiver/
+target/maven-status/
+target/test-classes/
+
+# Windows service files
+nssm-2.24-101-g897c7ad/
+
+# Documentation
+*.md
+!README.md
