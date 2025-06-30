@@ -1,5 +1,6 @@
 # Maven
 target/
+!target/task-scheduler-1.0-SNAPSHOT.jar
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -85,3 +86,16 @@ nssm-2.24-101-g897c7ad/
 # Keep the task output directory but not its contents
 task_outputs/*
 !task_outputs/.gitkeep 
+
+# Additional batch files (keep only the essential ones)
+*.bat
+!run-app.bat
+!run-docker.bat
+!git-push.bat
+
+# But include these essential files
+!pom.xml
+!README.md
+!Dockerfile
+!docker-compose.yml
+!docker-entrypoint.sh
