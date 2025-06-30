@@ -118,7 +118,8 @@ public class UIManager {
     }
     
     public static void displayCommandPrompt() {
-        // Add a blank line before the prompt for better visual separation between commands
+        // Add two blank lines before the prompt for better visual separation between commands
+        System.out.println();
         System.out.println();
         System.out.print(Colors.YELLOW_BOLD + "📋 TaskScheduler" + Colors.CYAN + " > " + Colors.RESET);
     }

@@ -121,22 +121,50 @@ The application supports the following commands:
 
 ## 🐳 Docker Support
 
-Run NeuroTask anywhere without worrying about dependencies or environment setup.
+Run TaskScheduler anywhere without worrying about dependencies or environment setup.
 
 ### Prerequisites
 - Docker installed on your system ([Get Docker](https://docs.docker.com/get-docker/))
 
 ### Quick Start with Docker
 
+#### Option 1: One-click Run (Recommended)
+```bash
+.\run-docker.bat
+```
+This will build the Docker image and start the application in interactive mode.
+
+#### Option 2: Manual Docker Commands
+
 1. **Build the Docker image:**
    ```bash
-   docker build -t neurotask .
+   docker build -t taskscheduler .
    ```
 
-2. **Run the container:**
+2. **Run the container in interactive mode:**
    ```bash
-   docker run -it neurotask
+   docker run -it --name taskscheduler --rm taskscheduler java -jar app.jar
    ```
+
+### Docker Features
+
+- **Persistent Storage**: Task outputs and configurations are preserved between container runs
+- **Portable**: Runs identically on any system with Docker installed
+- **Isolated**: Application runs in a contained environment without affecting your system
+- **No Dependencies**: No need to install Java or other software on your host machine
+
+### Using Docker Compose
+
+For advanced usage with persistent volumes:
+
+```bash
+docker-compose up
+```
+
+To stop the container:
+```bash
+docker-compose down
+```
 
 ### Using Docker Compose (Recommended)
 

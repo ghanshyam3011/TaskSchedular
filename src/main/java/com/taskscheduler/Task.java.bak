@@ -1,19 +1,20 @@
 package com.taskscheduler;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
+<<<<<<< HEAD
 import java.util.logging.Logger;
-
+import java.util.logging.Level;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.io.FileWriter;
 import com.google.gson.annotations.Expose;
+import java.lang.ProcessBuilder;
 
 public class Task {
     private static final Logger logger = Logger.getLogger(Task.class.getName());
@@ -58,11 +59,23 @@ public class Task {
     private String cronExpression; // Store cron expression for recurring tasks
     
     @Expose
-    private String command; // Added command field    @Expose
-    private String email; // Added email field
+    private String command; // Added command field
     
     @Expose
-    private Priority priority; // Task priority
+    private String email; // Added email field
+=======
+
+public class Task {
+    
+    private static int idCounter = 1;
+    private int id;
+    private String title;
+    private boolean completed;
+    private LocalDateTime dueDate;
+    private Set<String> tags;
+    private boolean notified;
+    private Duration reminderTime;
+>>>>>>> 3dc2680eafcc4c7a52951927cad2b8f3846a5519
 
     public Task(int id, String title, boolean completed, LocalDateTime dueDate) {
         this.id = id;
@@ -72,10 +85,12 @@ public class Task {
         this.tags = new HashSet<>();
         this.notified = false;
         this.reminderTime = Duration.ofHours(1); // Default reminder: 1 hour before
+<<<<<<< HEAD
         this.isRecurring = false;
         this.occurrencesGenerated = 0;
         this.recurrenceCount = 0;
-        this.priority = Priority.MEDIUM; // Default priority
+=======
+>>>>>>> 3dc2680eafcc4c7a52951927cad2b8f3846a5519
     }
 
     public int getId() {
@@ -164,6 +179,7 @@ public class Task {
         this.reminderTime = reminderTime;
     }
 
+<<<<<<< HEAD
     public boolean isRecurring() {
         return isRecurring;
     }
@@ -273,7 +289,9 @@ public class Task {
         // Check if the next occurrence would be after the end date
         if (recurrenceEnd != null && nextDue.isAfter(recurrenceEnd)) {
             return null;
-        }        // Create the next occurrence
+        }
+
+        // Create the next occurrence
         Task next = new Task(0, this.title, false, nextDue); // ID will be set by TaskManager
         next.setRecurring(true);
         next.setRecurrenceType(this.recurrenceType);
@@ -283,24 +301,15 @@ public class Task {
         next.setTags(new HashSet<>(this.tags));
         next.setReminderTime(this.reminderTime);
         next.setCronExpression(this.cronExpression);
-        next.setPriority(this.priority); // Copy priority
-        next.setCommand(this.command); // Copy command
-        next.setEmail(this.email); // Copy email
         return next;
     }
 
     public String getEmail() {
         return email;
-    }    public void setEmail(String email) {
+    }
+
+    public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Priority getPriority() {
-        return priority != null ? priority : Priority.MEDIUM;
-    }
-
-    public void setPriority(Priority priority) {
-        this.priority = priority != null ? priority : Priority.MEDIUM;
     }
 
     public void execute() {
@@ -327,23 +336,7 @@ public class Task {
                 
                 // Execute the batch file
                 ProcessBuilder processBuilder = new ProcessBuilder();
-                if (EnvironmentDetector.isRunningInDocker()) {
-                    // In Docker, we'll create and run a shell script instead
-                    File shellScript = new File(workingDir, "execute_command.sh");
-                    try (FileWriter shellWriter = new FileWriter(shellScript)) {
-                        shellWriter.write("#!/bin/bash\n");
-                        shellWriter.write("cd \"" + workingDir + "\"\n");
-                        shellWriter.write(command + "\n");
-                        shellWriter.write("exit $?\n");
-                    }
-                    shellScript.setExecutable(true);
-                    
-                    logger.info("Created shell script at: " + shellScript.getAbsolutePath());
-                    processBuilder.command("/bin/bash", shellScript.getAbsolutePath());
-                } else {
-                    // Windows environment - use the batch file
-                    processBuilder.command("cmd.exe", "/c", batchFile.getAbsolutePath());
-                }
+                processBuilder.command("cmd.exe", "/c", batchFile.getAbsolutePath());
                 processBuilder.directory(new File(workingDir));
                 processBuilder.redirectErrorStream(true);
                 
@@ -361,18 +354,10 @@ public class Task {
                 int exitCode = process.waitFor();
                 logger.info("Command execution completed with exit code: " + exitCode);
                 
-                // Clean up the batch/shell files
-                if (EnvironmentDetector.isRunningInDocker()) {
-                    File shellScript = new File(workingDir, "execute_command.sh");
-                    if (shellScript.exists()) {
-                        shellScript.delete();
-                        logger.info("Cleaned up shell script");
-                    }
-                } else {
-                    if (batchFile.exists()) {
-                        batchFile.delete();
-                        logger.info("Cleaned up batch file");
-                    }
+                // Clean up the batch file
+                if (batchFile.exists()) {
+                    batchFile.delete();
+                    logger.info("Cleaned up batch file");
                 }
                 
                 if (exitCode == 0) {
@@ -407,9 +392,12 @@ public class Task {
         }
     }
 
-    @Override    public String toString() {
+=======
+>>>>>>> 3dc2680eafcc4c7a52951927cad2b8f3846a5519
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("[%d] %s %s (Completed: %s)", id, getPriority().getIcon(), title, completed));
+        sb.append(String.format("[%d] %s (Completed: %s)", id, title, completed));
         
         if (dueDate != null) {
             try {
@@ -420,9 +408,7 @@ public class Task {
             }
         }
 
-        // Add priority information
-        sb.append(" [Priority: ").append(getPriority().getColoredDisplay()).append("]");
-
+<<<<<<< HEAD
         if (isRecurring) {
             sb.append(" [Recurring: ").append(recurrenceType);
             if (recurrenceCount > 0) {
@@ -438,6 +424,8 @@ public class Task {
             sb.append(" Command: ").append(command);
         }
 
+=======
+>>>>>>> 3dc2680eafcc4c7a52951927cad2b8f3846a5519
         if (tags != null && !tags.isEmpty()) {
             sb.append(" Tags: ").append(String.join(", ", tags));
         }
