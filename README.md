@@ -1,4 +1,4 @@
-# 📆 Task Scheduler
+# 📆 NeuroTask Scheduler
 
 An intelligent CLI task management application with powerful scheduling capabilities and emoji-rich interface.
 
@@ -23,7 +23,7 @@ An intelligent CLI task management application with powerful scheduling capabili
 ### Option 1: Run with Docker (easiest!)
 ```bash
 # Clone the repo
-git clone https://github.com/username/TaskSchedular.git
+git clone https://github.com/ghanshyam3011/TaskSchedular.git
 cd TaskSchedular
 
 # Run with Docker (builds automatically)
@@ -33,7 +33,7 @@ cd TaskSchedular
 ### Option 2: Run with Java directly
 ```bash
 # Clone the repo
-git clone https://github.com/username/TaskSchedular.git
+git clone https://github.com/ghanshyam3011/TaskSchedular.git
 cd TaskSchedular
 
 # Run the application
@@ -43,16 +43,16 @@ cd TaskSchedular
 ## 💻 Command Examples
 
 ```
-📋 TaskScheduler > add "Complete project documentation" due tomorrow at 5pm -p high
+📋 NeuroTask > add "Complete project documentation" due tomorrow at 5pm -p high
 
 ✅ Added task: "Complete project documentation" due 2025-07-01 17:00 [Priority: ● High]
 
-📋 TaskScheduler > add "Team meeting" due "every Monday at 10am" -r weekly -e
+📋 NeuroTask > add "Team meeting" due "every Monday at 10am" -r weekly -e
 
 ✅ Added recurring task: "Team meeting" due 2025-07-07 10:00 [Priority: ● Medium]
 📧 Email notifications enabled for this task
 
-📋 TaskScheduler > list
+📋 NeuroTask > list
 
 📊 Task List (2 tasks):
 [1] ● Complete project documentation (Completed: false) Due: 2025-07-01 17:00 [Priority: ● High]
@@ -62,7 +62,7 @@ cd TaskSchedular
 ## 📁 Project Structure
 
 ```
-TaskScheduler/
+NeuroTask/
 ├── 📂 src/                     # Source code
 ├── 📂 task_outputs/            # Task execution outputs
 ├── 📄 config.json              # User configuration
@@ -90,7 +90,7 @@ TaskScheduler/
 
 ## 🐳 Docker Magic
 
-Run TaskScheduler anywhere without worrying about Java versions, dependencies, or environment variables!
+Run NeuroTask anywhere without worrying about Java versions, dependencies, or environment variables!
 
 ### Why Docker?
 
@@ -106,10 +106,10 @@ Run TaskScheduler anywhere without worrying about Java versions, dependencies, o
 ./run-docker.bat
 
 # For advanced users
-docker build -t taskscheduler .                # Build the image
-docker run -it taskscheduler                   # Run interactively
-docker-compose up -d                           # Run with persistent storage
-docker-compose down                            # Stop the container
+docker build -t neurotask .                # Build the image
+docker run -it neurotask                   # Run interactively
+docker-compose up -d                       # Run with persistent storage
+docker-compose down                        # Stop the container
 ```
 
 ## 🧩 Advanced Features
@@ -120,18 +120,15 @@ docker-compose down                            # Stop the container
 - **Auto-suggestions**: Smart command completion as you type
 - **Custom Commands**: Create aliases for frequently used commands
 
-## 🔍 More Info
-
-For advanced configuration options, background service setup, and API documentation, check out the source code and comments.
-
-## 📬 Contact
+##  Contact
 
 Feel free to open issues on GitHub for bugs, feature requests, or questions.
 
 ---
 
 <div align="center">
-  <sub>Built with ❤️ using Java and Docker</sub>
+  <sub>Built with ❤️ by <a href="https://www.linkedin.com/in/ghanshyam-thacker/">Ghanshyam Thacker</a></sub><br>
+  <sub><a href="https://github.com/ghanshyam3011/TaskSchedular">https://github.com/ghanshyam3011/TaskSchedular</a></sub>
 </div>
 
 ### Using Docker Compose (Recommended)
