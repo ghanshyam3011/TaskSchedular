@@ -1,170 +1,138 @@
-# Task Scheduler
+# 📆 Task Scheduler
 
-A robust command-line task management application written in Java with background task execution capabilities.
+An intelligent CLI task management application with powerful scheduling capabilities and emoji-rich interface.
 
-## Features
-- Create, read, update, and delete tasks
-- Store tasks with title, description, and due date
-- Command-line interface for task management
-- Persistent storage of tasks in JSON format
-- Background task execution (even when main application is closed)
-- Email notifications for task completion
-- Automated task scheduling with custom timing options
+<div align="center">
+  <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java" alt="Java 17"/>
+  <img src="https://img.shields.io/badge/Platform-CLI-blue?style=for-the-badge" alt="CLI"/>
+  <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker" alt="Docker Ready"/>
+</div>
 
-## Project Structure
+## ✨ Features
+
+- 🚀 **Intuitive Command Line Interface** with colorful prompt and emoji support
+- 📋 **Task Management** - create, update, complete, and delete tasks effortlessly
+- ⏰ **Smart Scheduling** - set precise due dates with natural language processing
+- 🔄 **Recurring Tasks** - daily, weekly, or custom recurrence patterns
+- 📱 **Email Notifications** - get reminders when tasks are due
+- 🤖 **Background Execution** - tasks run even when the app is closed
+- 🐳 **Containerized** - run anywhere with Docker, no setup required
+
+## 🚀 Quick Start
+
+### Option 1: Run with Docker (easiest!)
+```bash
+# Clone the repo
+git clone https://github.com/username/TaskSchedular.git
+cd TaskSchedular
+
+# Run with Docker (builds automatically)
+./run-docker.bat
+```
+
+### Option 2: Run with Java directly
+```bash
+# Clone the repo
+git clone https://github.com/username/TaskSchedular.git
+cd TaskSchedular
+
+# Run the application
+./run-app.bat
+```
+
+## 💻 Command Examples
+
+```
+📋 TaskScheduler > add "Complete project documentation" due tomorrow at 5pm -p high
+
+✅ Added task: "Complete project documentation" due 2025-07-01 17:00 [Priority: ● High]
+
+📋 TaskScheduler > add "Team meeting" due "every Monday at 10am" -r weekly -e
+
+✅ Added recurring task: "Team meeting" due 2025-07-07 10:00 [Priority: ● Medium]
+📧 Email notifications enabled for this task
+
+📋 TaskScheduler > list
+
+📊 Task List (2 tasks):
+[1] ● Complete project documentation (Completed: false) Due: 2025-07-01 17:00 [Priority: ● High]
+[2] ● Team meeting (Completed: false) Due: 2025-07-07 10:00 [Priority: ● Medium] ↻ Recurring: weekly
+```
+
+## 📁 Project Structure
+
 ```
 TaskScheduler/
-├── src/main/java/com/taskscheduler/  # Source code
-│   ├── Main.java                    # Application entry point
-│   ├── Task.java                    # Task model class
-│   ├── TaskManager.java             # Task management logic
-│   ├── CommandHandler.java          # Command processing
-│   ├── BackgroundTaskRunner.java    # Background task execution
-│   ├── EmailNotifier.java           # Email notification service
-│   └── ConfigManager.java           # Configuration management
-├── simple_scheduler.ps1             # PowerShell background scheduler
-├── start_scheduler.bat              # Script to start background scheduler
-├── run_task_checker.bat             # Task execution batch file
-├── task_outputs/                    # Task execution output files
-└── tasks.json                       # Task data storage (JSON format)
+├── 📂 src/                     # Source code
+├── 📂 task_outputs/            # Task execution outputs
+├── 📄 config.json              # User configuration
+├── 📄 tasks.json               # Task data storage
+├── 📄 email-config.json        # Email settings
+├── 🐳 Dockerfile               # Docker configuration
+├── 🐳 docker-compose.yml       # Multi-container setup
+├── 📜 run-app.bat              # Run without Docker
+└── 🐳 run-docker.bat           # Run with Docker
 ```
 
-## Setup and Running
+## 📝 Command Reference
 
-### Basic Setup
-1. Ensure you have Java installed on your system
-2. Compile the application:
-   ```
-   javac -d classes -cp . src/main/java/com/taskscheduler/*.java
-   ```
-3. Run the application:
-   ```
-   java -cp classes com.taskscheduler.Main
-   ```
+| Command | Description | Example |
+|---------|-------------|---------|
+| `add` | Create a new task | `add "Buy groceries" due tomorrow` |
+| `list` | Show all tasks | `list` or `list upcoming` |
+| `complete` | Mark task as done | `complete 1` |
+| `delete` | Remove a task | `delete 2` |
+| `email-notification` | Set email for notifications | `email-notification user@example.com` |
+| `help` | Show available commands | `help` |
+| `menu` | Interactive menu mode | `menu` |
+| `exit` | Close the application | `exit` |
 
-### Email Notifications Setup
-To enable email notifications:
 
-1. Set your email address in `user-config.json`:
-   ```json
-   {
-     "email": "your.email@example.com"
-   }
-   ```
+## 🐳 Docker Magic
 
-2. Edit the `run_task_checker.bat` file to add your email credentials:
-   ```bat
-   set EMAIL_USERNAME=your.email@example.com
-   set EMAIL_PASSWORD=your-app-password-here
-   ```
-   
-   Note: For Gmail, you'll need to use an App Password rather than your regular password.
-   
-3. Email notifications will be sent when tasks are executed by the background scheduler
-   }
-   ```
+Run TaskScheduler anywhere without worrying about Java versions, dependencies, or environment variables!
 
-2. Configure email credentials in `run_task_checker.bat`:
-   ```bat
-   set EMAIL_USERNAME=your.email@example.com
-   set EMAIL_PASSWORD=your-app-password-here
-   ```
+### Why Docker?
 
-3. For Gmail users, you'll need to create an App Password:
-   - Go to your Google Account settings
-   - Navigate to Security > App passwords
-   - Create a new app password for "Mail" and use it as your EMAIL_PASSWORD
+- 🛡️ **Isolation**: Everything runs in its own container
+- 🧩 **All-in-one**: No Java installation or configuration needed
+- 📦 **Portability**: Same experience across Windows, Mac, and Linux
+- 🔄 **Persistent**: Your tasks remain between sessions
 
-## Background Task Execution
-
-This Task Scheduler can run in the background and execute tasks even when the main application is closed. The background execution system consists of:
-
-1. **PowerShell Scheduler (`simple_scheduler.ps1`)**: Runs every minute to check for due tasks
-2. **Launcher Script (`start_scheduler.bat`)**: Starts the background scheduler
-3. **Task Checker (`run_task_checker.bat`)**: Executes due tasks through the Java application
-
-### Starting the Background Scheduler
-
-To start the background task scheduler:
-
-1. Run the `start_scheduler.bat` file:
-   ```
-   .\start_scheduler.bat
-   ```
-
-2. The scheduler will start in a console window and begin checking for due tasks every minute.
-3. You can close the main application, and tasks will continue to execute at their scheduled times.
-4. Email notifications will be sent upon task completion (if configured).
-
-### Logs and Monitoring
-
-Background task execution generates several log files:
-
-- `scheduler_log.txt`: Records when the scheduler checks for tasks
-- `task_checker_log.txt`: Details about task execution attempts
-- `task_outputs/`: Contains output files from executed tasks
-
-## Usage
-The application supports the following commands:
-- `add` - Add a new task with optional due date and recurrence
-- `list` - List all tasks
-- `list upcoming` - List upcoming tasks
-- `list overdue` - List overdue tasks
-- `delete` - Delete a task
-- `complete` - Mark a task as completed
-- `due` - Set or change the due date for a task
-- `tag` - Add tags to a task
-- `reminder` - Set a reminder for a task
-- `email-notification` - Configure email notifications
-- `help` - Show available commands
-- `exit` - Exit the application
-
-## 🐳 Docker Support
-
-Run TaskScheduler anywhere without worrying about dependencies or environment setup.
-
-### Prerequisites
-- Docker installed on your system ([Get Docker](https://docs.docker.com/get-docker/))
-
-### Quick Start with Docker
-
-#### Option 1: One-click Run (Recommended)
-```bash
-.\run-docker.bat
-```
-This will build the Docker image and start the application in interactive mode.
-
-#### Option 2: Manual Docker Commands
-
-1. **Build the Docker image:**
-   ```bash
-   docker build -t taskscheduler .
-   ```
-
-2. **Run the container in interactive mode:**
-   ```bash
-   docker run -it --name taskscheduler --rm taskscheduler java -jar app.jar
-   ```
-
-### Docker Features
-
-- **Persistent Storage**: Task outputs and configurations are preserved between container runs
-- **Portable**: Runs identically on any system with Docker installed
-- **Isolated**: Application runs in a contained environment without affecting your system
-- **No Dependencies**: No need to install Java or other software on your host machine
-
-### Using Docker Compose
-
-For advanced usage with persistent volumes:
+### Docker Quick Commands
 
 ```bash
-docker-compose up
+# Start the application
+./run-docker.bat
+
+# For advanced users
+docker build -t taskscheduler .                # Build the image
+docker run -it taskscheduler                   # Run interactively
+docker-compose up -d                           # Run with persistent storage
+docker-compose down                            # Stop the container
 ```
 
-To stop the container:
-```bash
-docker-compose down
-```
+## 🧩 Advanced Features
+
+- **Natural Date Parsing**: Type dates in plain English - "next Friday", "tomorrow at 3pm"
+- **Task Priorities**: Flag tasks as High, Medium, or Low priority
+- **Command History**: Access previously used commands with up/down arrows
+- **Auto-suggestions**: Smart command completion as you type
+- **Custom Commands**: Create aliases for frequently used commands
+
+## 🔍 More Info
+
+For advanced configuration options, background service setup, and API documentation, check out the source code and comments.
+
+## 📬 Contact
+
+Feel free to open issues on GitHub for bugs, feature requests, or questions.
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ using Java and Docker</sub>
+</div>
 
 ### Using Docker Compose (Recommended)
 
