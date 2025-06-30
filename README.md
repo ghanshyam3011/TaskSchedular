@@ -20,22 +20,23 @@ An intelligent CLI task management application with powerful scheduling capabili
 
 ## 🚀 Quick Start
 
-### Option 1: Run with Docker (easiest!)
+First, clone the repository:
 ```bash
 # Clone the repo
 git clone https://github.com/ghanshyam3011/TaskSchedular.git
 cd TaskSchedular
+```
 
+Then, choose one of these options:
+
+### Option 1: Run with Docker (easiest!)
+```bash
 # Run with Docker (builds automatically)
 ./run-docker.bat
 ```
 
 ### Option 2: Run with Java directly
 ```bash
-# Clone the repo
-git clone https://github.com/ghanshyam3011/TaskSchedular.git
-cd TaskSchedular
-
 # Run the application
 ./run-app.bat
 ```
@@ -110,6 +111,37 @@ docker build -t neurotask .                # Build the image
 docker run -it neurotask                   # Run interactively
 docker-compose up -d                       # Run with persistent storage
 docker-compose down                        # Stop the container
+```
+
+## 🔄 Background Service (Windows Only)
+
+NeuroTask Scheduler can run in the background as a Windows service, executing your scheduled tasks even when the application is closed or after system reboot.
+
+### Setting Up Background Service
+
+#### Option 1: Manual Execution (Testing)
+```powershell
+# Run in a PowerShell window
+.\simple_scheduler.ps1
+```
+Keep the PowerShell window open - the script will check for tasks every 30 seconds.
+
+#### Option 2: Install as Windows Service (Recommended)
+```powershell
+# Run PowerShell as Administrator
+.\setup_background_service.ps1
+```
+This installs and starts a Windows service that runs automatically with Windows.
+
+### Verifying Background Service
+1. Create a task scheduled for a future time
+2. Close the main application
+3. When the scheduled time arrives, the task will execute automatically
+4. Check `task_outputs` folder for the execution results
+
+### Viewing Service Status
+```powershell
+Get-Service -Name NeuroTaskScheduler
 ```
 
 ## 🧩 Advanced Features
