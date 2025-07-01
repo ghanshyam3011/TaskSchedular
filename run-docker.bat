@@ -14,7 +14,7 @@ if not exist "target\task-scheduler-1.0-SNAPSHOT.jar" (
   REM Create a very simple dummy JAR file
   echo Creating a dummy JAR file for Docker demo...
   echo Manifest-Version: 1.0 > MANIFEST.MF
-  echo Created-By: NeuroTask Demo > MANIFEST.MF
+  echo Created-By: NeuroTask Demo >> MANIFEST.MF
   echo Main-Class: DemoMain >> MANIFEST.MF
   echo. >> MANIFEST.MF
   
@@ -51,36 +51,6 @@ if not exist "target\task-scheduler-1.0-SNAPSHOT.jar" (
   echo This is a demo version for Docker demonstration only.
   echo.
 )
-  
-  REM Find Java compiler
-  where javac >nul 2>&1
-  if %ERRORLEVEL% NEQ 0 (
-    echo Java compiler not found. Please install JDK or use a pre-built JAR file.
-    exit /b 1
-  )
-  
-  REM Compile the Java file
-  echo Compiling Java source...
-  javac temp_classes\com\taskscheduler\ui\UIManager.java
-  
-  REM Create a manifest file for the JAR
-  echo Main-Class: com.taskscheduler.ui.UIManager > temp_classes\MANIFEST.MF
-  
-  REM Create the JAR file
-  echo Creating JAR file...
-  cd temp_classes
-  jar cfm ..\target\task-scheduler-1.0-SNAPSHOT.jar MANIFEST.MF com\taskscheduler\ui\UIManager.class
-  cd ..
-  
-  if not exist "target\task-scheduler-1.0-SNAPSHOT.jar" (
-    echo Failed to create JAR file.
-    echo Please build manually with Maven:
-    echo   mvn clean package -DskipTests
-    exit /b 1
-  )
-  
-  echo Demo JAR file created successfully!
-  echo.
 )
 
 REM Stop and remove any existing container
