@@ -4,17 +4,25 @@ chcp 65001 > nul
 echo Building and running NeuroTask in Docker...
 echo.
 
-REM First, make sure the JAR is built
-echo Building Java application...
+REM Check if JAR exists
 if not exist "target\task-scheduler-1.0-SNAPSHOT.jar" (
-  echo Maven build is required...
-  if exist ".\mvnw.cmd" (
-    call .\mvnw.cmd clean package -DskipTests
-  ) else (
-    echo Maven wrapper not found. Please build the application first with:
-    echo mvn clean package -DskipTests
+  echo JAR file not found. Downloading prebuilt JAR...
+  
+  REM Create target directory if it doesn't exist
+  if not exist "target" mkdir target
+  
+  REM Use curl to download the JAR file (curl is included in Windows 10+)
+  curl -L -o target\task-scheduler-1.0-SNAPSHOT.jar https://github.com/ghanshyam3011/TaskSchedular/releases/latest/download/task-scheduler-1.0-SNAPSHOT.jar
+  
+  if not exist "target\task-scheduler-1.0-SNAPSHOT.jar" (
+    echo Failed to download JAR file.
+    echo Please check your internet connection or build manually with Maven:
+    echo   mvn clean package -DskipTests
     exit /b 1
   )
+  
+  echo JAR file downloaded successfully!
+  echo.
 )
 
 REM Stop and remove any existing container
