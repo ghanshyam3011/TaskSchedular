@@ -51,7 +51,6 @@ if not exist "target\task-scheduler-1.0-SNAPSHOT.jar" (
   echo This is a demo version for Docker demonstration only.
   echo.
 )
-)
 
 REM Stop and remove any existing container
 docker stop neurotask 2>nul
