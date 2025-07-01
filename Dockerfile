@@ -9,10 +9,13 @@ COPY pom.xml .
 COPY lib/ ./lib/
 COPY target/task-scheduler-1.0-SNAPSHOT.jar ./app.jar
 
-# Copy configuration files
-COPY email-config.json .
-COPY config.json .
-COPY tasks.json .
+# Copy configuration files (if they exist)
+COPY email-config.json* ./
+COPY config.json* ./
+COPY tasks.json* ./
+
+# Create empty configuration files if they don't exist
+RUN touch email-config.json config.json tasks.json
 
 # Create directory for task outputs
 RUN mkdir -p /app/task_outputs
