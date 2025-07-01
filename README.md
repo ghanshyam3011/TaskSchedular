@@ -31,9 +31,12 @@ Then, choose one of these options:
 
 ### Option 1: Run with Docker (easiest!)
 ```bash
-# Run with Docker (builds automatically)
+# Make sure Docker Desktop is running first
+# Then run the application with Docker (builds automatically)
 ./run-docker.bat
 ```
+
+**Note:** The Docker script will automatically try to build the Java application if needed. If you encounter any build issues, you may need to install Maven and run `mvn clean package` manually before running the Docker command.
 
 ### Option 2: Run with Java directly
 ```bash
