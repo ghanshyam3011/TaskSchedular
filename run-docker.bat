@@ -11,44 +11,22 @@ if not exist "target\task-scheduler-1.0-SNAPSHOT.jar" (
   REM Create target directory if it doesn't exist
   if not exist "target" mkdir target
   
-  REM Create a minimal executable JAR file with a Main class
-  echo Creating minimal JAR file...
+  REM Create the demo JAR directly using the pre-built one
+  echo Downloading the demo JAR file...
   
-  REM Create a temporary directory for our class files
-  if not exist "temp_classes\com\taskscheduler\ui" mkdir temp_classes\com\taskscheduler\ui
+  REM Use PowerShell to create a minimal JAR
+  powershell -Command "Invoke-WebRequest -Uri 'https://gist.githubusercontent.com/ghanshyam3011/f2d51e79c1c8b5e615dd9382a0002b5c/raw/c1d93769139db603582e722f7b27fdfae7b7d705/neurotask-demo.jar' -OutFile 'target\task-scheduler-1.0-SNAPSHOT.jar'"
   
-  REM Write a simple Java source file
-  echo public class UIManager { > temp_classes\com\taskscheduler\ui\UIManager.java
-  echo     public static void main(String[] args) { >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("\n\n\n"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("╔════════════════════════════════════════════════════════════════╗"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("║                                                                ║"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("║  🚀 NEUROTASK SCHEDULER                                      ║"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("║                                                                ║"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("║  DEMO VERSION - CREATED FOR DOCKER DEMONSTRATION            ║"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("║                                                                ║"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("╚════════════════════════════════════════════════════════════════╝"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("\n\n"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("This is a minimal demo version of NeuroTask Scheduler."); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("For the full version, please build from source using Maven."); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("\n"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("To exit, press Ctrl+C or type 'exit'"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         System.out.println("\n"); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         while (true) { >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo             System.out.print("NeuroTask > "); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo             try { >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo                 String input = new java.util.Scanner(System.in).nextLine(); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo                 if ("exit".equalsIgnoreCase(input)) { >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo                     System.out.println("Exiting..."); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo                     break; >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo                 } >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo                 System.out.println("Command not implemented in demo version."); >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo             } catch (Exception e) { >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo                 break; >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo             } >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo         } >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo     } >> temp_classes\com\taskscheduler\ui\UIManager.java
-  echo } >> temp_classes\com\taskscheduler\ui\UIManager.java
+  if not exist "target\task-scheduler-1.0-SNAPSHOT.jar" (
+    echo Failed to create the demo JAR.
+    echo Please try again with internet access or build manually with Maven:
+    echo   mvn clean package -DskipTests
+    exit /b 1
+  )
+  
+  echo Demo JAR file created successfully!
+  echo This is a demo version with limited functionality.
+  echo.
   
   REM Find Java compiler
   where javac >nul 2>&1
