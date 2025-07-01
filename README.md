@@ -36,7 +36,7 @@ Then, choose one of these options:
 ./run-docker.bat
 ```
 
-**Note:** The Docker script will automatically try to build the Java application if needed. If you encounter any build issues, you may need to install Maven and run `mvn clean package` manually before running the Docker command.
+**Note:** The Docker script will automatically download the prebuilt JAR file if it's not found locally. This requires an internet connection. If you prefer to build it yourself, you can install Maven and run `mvn clean package` manually before running the Docker command.
 
 ### Option 2: Run with Java directly
 ```bash
