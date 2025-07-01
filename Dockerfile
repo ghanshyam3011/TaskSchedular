@@ -4,17 +4,18 @@ FROM openjdk:17-slim
 # Set working directory in container
 WORKDIR /app
 
-# Copy maven/build files if they exist
-COPY pom.xml* ./ 2>/dev/null || true
-
-# Create lib directory (will be empty if there are no dependencies)
+# Create necessary directories
 RUN mkdir -p ./lib
+RUN mkdir -p /app/task_outputs
 
-# Copy lib directory if it exists
-COPY lib/ ./lib/ 2>/dev/null || true
+# Create empty configuration files to ensure they exist
+RUN touch email-config.json config.json tasks.json
 
-# Copy the JAR file 
+# Copy the JAR file (this must exist)
 COPY target/task-scheduler-1.0-SNAPSHOT.jar ./app.jar
+
+# Copy optional configuration files if they exist (wildcard patterns will not fail)
+COPY *.json ./
 
 # Create a backup demo script in case JAR doesn't work
 RUN echo '#!/bin/sh' > demo.sh && \
@@ -24,20 +25,6 @@ RUN echo '#!/bin/sh' > demo.sh && \
     echo 'echo "Press Ctrl+C to exit.\n"' >> demo.sh && \
     echo 'while true; do sleep 60; done' >> demo.sh && \
     chmod +x demo.sh
-
-# Run the JAR if possible, otherwise run the demo script
-CMD java -jar app.jar || ./demo.sh
-
-# Copy configuration files (if they exist)
-COPY email-config.json* ./
-COPY config.json* ./
-COPY tasks.json* ./
-
-# Create empty configuration files if they don't exist
-RUN touch email-config.json config.json tasks.json
-
-# Create directory for task outputs
-RUN mkdir -p /app/task_outputs
 
 # Make sure we run in foreground mode in container
 ENV BACKGROUND_MODE=false
