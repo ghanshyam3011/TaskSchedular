@@ -4,22 +4,20 @@ FROM openjdk:17-slim
 # Set working directory in container
 WORKDIR /app
 
-# Copy maven/build files
-COPY pom.xml* ./
-COPY lib/ ./lib/
+# Copy maven/build files if they exist
+COPY pom.xml* ./ 2>/dev/null || true
+
+# Create lib directory (will be empty if there are no dependencies)
+RUN mkdir -p ./lib
+
+# Copy lib directory if it exists
+COPY lib/ ./lib/ 2>/dev/null || true
 
 # Copy the JAR file 
 COPY target/task-scheduler-1.0-SNAPSHOT.jar ./app.jar
 
-# Create a dummy app.jar if the file doesn't exist after COPY
-# This should never happen with our updated run-docker.bat, but just in case
-RUN if [ ! -f app.jar ]; then echo "JAR not found, using dummy JAR"; \
-    echo "Class-Path: ." > manifest.txt; \
-    mkdir -p target/classes/com/taskscheduler; \
-    echo "public class Main { public static void main(String[] args) { System.out.println(\"Please build the application first\"); } }" > target/classes/com/taskscheduler/Main.java; \
-    javac target/classes/com/taskscheduler/Main.java; \
-    jar cfm app.jar manifest.txt -C target/classes .; \
-    fi
+# Set the entry point to run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # Copy configuration files (if they exist)
 COPY email-config.json* ./
