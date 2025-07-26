@@ -1,6 +1,7 @@
+
 # 📆 NeuroTask Scheduler
 
-An intelligent CLI task management application with powerful scheduling capabilities and emoji-rich interface.
+Automate, schedule, and track anything—from simple reminders to complex shell commands and scripts. NeuroTask is an intelligent CLI task automation and management application with powerful scheduling, command execution, and emoji-rich interface.
 
 <div align="center">
   <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java" alt="Java 17"/>
@@ -11,6 +12,7 @@ An intelligent CLI task management application with powerful scheduling capabili
 ## ✨ Features
 
 - 🚀 **Intuitive Command Line Interface** with colorful prompt and emoji support
+- ⚡ **Command Automation** - schedule and automate any shell command, script, or executable (backups, cleanups, deployments, and more)
 - 📋 **Task Management** - create, update, complete, and delete tasks effortlessly
 - ⏰ **Smart Scheduling** - set precise due dates with natural language processing
 - 🔄 **Recurring Tasks** - daily, weekly, or custom recurrence patterns
@@ -149,6 +151,7 @@ Get-Service -Name NeuroTaskScheduler
 
 ## 🧩 Advanced Features
 
+- **Automate Anything**: Schedule shell commands or scripts for system maintenance, database backups, deployments, notifications, and more
 - **Natural Date Parsing**: Type dates in plain English - "next Friday", "tomorrow at 3pm"
 - **Task Priorities**: Flag tasks as High, Medium, or Low priority
 - **Command History**: Access previously used commands with up/down arrows
