@@ -49,20 +49,26 @@ Then, choose one of these options:
 ## 💻 Command Examples
 
 ```
+📋 NeuroTask > add-command "Database backup" run "mysqldump -u root -p mydb > backup-$(date +%Y%m%d).sql" due "daily at 1am" -r daily
+
+✅ Added command task: "Database backup" due 2025-07-27 01:00 [Priority: ● Medium]
+⚙️ Command will execute automatically with system privileges
+
+📋 NeuroTask > add-command "Files backup" run "tar -czf /backups/files_$(date +%Y%m%d).tar.gz /important-data" due "every Sunday at 2am" -r weekly
+
+✅ Added command task: "Files backup" due 2025-07-28 02:00 [Priority: ● Medium]
+⚙️ Command will execute automatically with system privileges
+
 📋 NeuroTask > add "Complete project documentation" due tomorrow at 5pm -p high
 
 ✅ Added task: "Complete project documentation" due 2025-07-01 17:00 [Priority: ● High]
 
-📋 NeuroTask > add "Team meeting" due "every Monday at 10am" -r weekly -e
-
-✅ Added recurring task: "Team meeting" due 2025-07-07 10:00 [Priority: ● Medium]
-📧 Email notifications enabled for this task
-
 📋 NeuroTask > list
 
-📊 Task List (2 tasks):
-[1] ● Complete project documentation (Completed: false) Due: 2025-07-01 17:00 [Priority: ● High]
-[2] ● Team meeting (Completed: false) Due: 2025-07-07 10:00 [Priority: ● Medium] ↻ Recurring: weekly
+📊 Task List (3 tasks):
+[1] ● Database backup (Completed: false) Due: 2025-07-27 01:00 [Priority: ● Medium] ↻ Recurring: daily ⚙️ Command
+[2] ● Files backup (Completed: false) Due: 2025-07-28 02:00 [Priority: ● Medium] ↻ Recurring: weekly ⚙️ Command
+[3] ● Complete project documentation (Completed: false) Due: 2025-07-01 17:00 [Priority: ● High]
 ```
 
 ## 📁 Project Structure
@@ -85,6 +91,7 @@ NeuroTask/
 | Command | Description | Example |
 |---------|-------------|---------|
 | `add` | Create a new task | `add "Buy groceries" due tomorrow` |
+| `add-command` | Schedule a shell command | `add-command "Backup files" run "tar -czf backup.tar.gz /data" due "daily at midnight"` |
 | `list` | Show all tasks | `list` or `list upcoming` |
 | `complete` | Mark task as done | `complete 1` |
 | `delete` | Remove a task | `delete 2` |
