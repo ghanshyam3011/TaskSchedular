@@ -35,12 +35,17 @@ ENV RUNNING_IN_DOCKER=true
 # Expose any ports needed (if your app uses a web interface in future)
 # EXPOSE 8080
 
-# Copy and set up entrypoint script
-COPY docker-entrypoint.sh /app/
-RUN chmod +x /app/docker-entrypoint.sh
+# Create an entrypoint script directly in the container (avoiding Windows/Linux line ending issues)
+RUN echo '#!/bin/sh' > /app/entrypoint.sh && \
+    echo 'mkdir -p /app/task_outputs' >> /app/entrypoint.sh && \
+    echo 'chmod 777 /app/task_outputs' >> /app/entrypoint.sh && \
+    echo 'echo "# Docker detection file" > /app/running_in_docker' >> /app/entrypoint.sh && \
+    echo 'chmod 644 /app/running_in_docker' >> /app/entrypoint.sh && \
+    echo 'java -jar app.jar "$@" || ./demo.sh' >> /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh
 
-# Set the entrypoint
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# Set the entrypoint to use the script we created inside the container
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Default command (can be overridden at runtime)
 CMD ["--foreground"]

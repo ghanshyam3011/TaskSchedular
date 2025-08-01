@@ -1,4 +1,5 @@
 #!/bin/sh
+# This is the Docker entrypoint script that runs the application
 
 # Ensure the task outputs directory exists and is writable
 mkdir -p /app/task_outputs
@@ -9,9 +10,4 @@ echo "# Docker detection file - tells the app to use bash instead of cmd.exe" > 
 chmod 644 /app/running_in_docker
 
 # Try to execute the Java application, fall back to demo script if it fails
-if java -jar app.jar "$@"; then
-    echo "Java application exited"
-else
-    echo "Java application failed to run, starting demo script..."
-    ./demo.sh
-fi
+java -jar app.jar "$@" || ./demo.sh
