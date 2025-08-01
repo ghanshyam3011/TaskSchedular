@@ -35,7 +35,7 @@ Then, choose one of these options:
 ```bash
 # Make sure Docker Desktop is running first
 # Then run the application with Docker (builds automatically)
-./run-docker.bat
+./scripts/run-docker.bat
 ```
 
 **Note:** The Docker script will automatically download the prebuilt JAR file if it's not found locally. This requires an internet connection. If you prefer to build it yourself, you can install Maven and run `mvn clean package` manually before running the Docker command.
@@ -43,7 +43,7 @@ Then, choose one of these options:
 ### Option 2: Run with Java directly
 ```bash
 # Run the application
-./run-app.bat
+./scripts/run-app.bat
 ```
 
 ## 💻 Command Examples
@@ -76,14 +76,22 @@ Then, choose one of these options:
 ```
 NeuroTask/
 ├── 📂 src/                     # Source code
-├── 📂 task_outputs/            # Task execution outputs
-├── 📄 config.json              # User configuration
-├── 📄 tasks.json               # Task data storage
-├── 📄 email-config.json        # Email settings
-├── 🐳 Dockerfile               # Docker configuration
-├── 🐳 docker-compose.yml       # Multi-container setup
-├── 📜 run-app.bat              # Run without Docker
-└── 🐳 run-docker.bat           # Run with Docker
+├── 📂 data/                    # Data directory
+│   └── 📂 task_outputs/        # Task execution outputs
+├── � config/                  # Configuration directory
+│   ├── 📄 config.json          # User configuration
+│   ├── 📄 tasks.json           # Task data storage
+│   └── 📄 email-config.json    # Email settings
+├── � docker/                  # Docker configuration
+│   ├── 🐳 Dockerfile           # Docker image definition
+│   ├── 🐳 docker-compose.yml   # Multi-container setup
+│   └── 📜 docker-entrypoint.sh # Container startup script
+├── � scripts/                 # Scripts directory
+│   ├── �📜 run-app.bat          # Run without Docker
+│   ├── 🐳 run-docker.bat       # Run with Docker
+│   └── 📜 setup_background_service.ps1 # Windows service setup
+├── 📂 docs/                    # Documentation directory
+└── 📂 bin/                     # Binary executables
 ```
 
 ## 📝 Command Reference
@@ -134,14 +142,14 @@ NeuroTask Scheduler can run in the background as a Windows service, executing yo
 #### Option 1: Manual Execution (Testing)
 ```powershell
 # Run in a PowerShell window
-.\simple_scheduler.ps1
+.\scripts\simple_scheduler.ps1
 ```
 Keep the PowerShell window open - the script will check for tasks every 30 seconds.
 
 #### Option 2: Install as Windows Service (Recommended)
 ```powershell
 # Run PowerShell as Administrator
-.\setup_background_service.ps1
+.\scripts\setup_background_service.ps1
 ```
 This installs and starts a Windows service that runs automatically with Windows.
 
