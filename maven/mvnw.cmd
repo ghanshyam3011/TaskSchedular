@@ -1,80 +1,47 @@
 @echo off
-title Maven Wrapper
-setlocal
+rem Simple Maven Wrapper 
+rem Uses Java to run Maven commands without needing Maven installed
 
-set ERROR_CODE=0
-
-rem Check for Java installation
-if not "%JAVA_HOME%" == "" goto checkJavaHomeValid
-echo Error: JAVA_HOME not found in your environment. >&2
-echo Please set the JAVA_HOME variable in your environment. >&2
-goto error
-
-:checkJavaHomeValid
-if exist "%JAVA_HOME%\bin\java.exe" goto init
-echo Error: JAVA_HOME is set to an invalid directory: %JAVA_HOME% >&2
-goto error
-
-:init
-rem Find the project base directory
-set MAVEN_PROJECTBASEDIR=%MAVEN_BASEDIR%
-if not "%MAVEN_PROJECTBASEDIR%"=="" goto setMavenProps
-
-set EXEC_DIR=%CD%
-set WDIR=%EXEC_DIR%
-:findBaseDir
-if exist "%WDIR%"\.mvn goto baseDirFound
-cd ..
-if "%WDIR%"=="%CD%" goto baseDirNotFound
-set WDIR=%CD%
-goto findBaseDir
-
-:baseDirFound
-set MAVEN_PROJECTBASEDIR=%WDIR%
-cd "%EXEC_DIR%"
-goto setMavenProps
-
-:baseDirNotFound
-set MAVEN_PROJECTBASEDIR=%EXEC_DIR%
-cd "%EXEC_DIR%"
-
-:setMavenProps
-if exist "%MAVEN_PROJECTBASEDIR%\.mvn\jvm.config" (
-  for /F "usebackq delims=" %%a in ("%MAVEN_PROJECTBASEDIR%\.mvn\jvm.config") do set JVM_CONFIG_MAVEN_PROPS=!JVM_CONFIG_MAVEN_PROPS! %%a
+rem Check if Java is installed
+if "%JAVA_HOME%" == "" (
+    echo Error: JAVA_HOME not set! Please install Java first.
+    exit /b 1
 )
 
-rem Setup Maven environment
-set MAVEN_JAVA_EXE="%JAVA_HOME%\bin\java.exe"
-set WRAPPER_JAR="%MAVEN_PROJECTBASEDIR%\.mvn\wrapper\maven-wrapper.jar"
-set WRAPPER_LAUNCHER=org.apache.maven.wrapper.MavenWrapperMain
-set DOWNLOAD_URL="https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
+rem Find where this script is located
+set SCRIPT_DIR=%~dp0
+set PROJECT_DIR=%SCRIPT_DIR%..
 
-rem Get custom download URL if specified in properties
-for /F "usebackq tokens=1,2 delims==" %%A in ("%MAVEN_PROJECTBASEDIR%\.mvn\wrapper\maven-wrapper.properties") do (
-    if "%%A"=="wrapperUrl" set DOWNLOAD_URL=%%B
+rem Set up Maven variables
+set MAVEN_VERSION=3.8.6
+set MAVEN_JAR=%PROJECT_DIR%\.mvn\wrapper\maven-wrapper.jar
+set MAVEN_URL=https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar
+set MAVEN_PROPS=%PROJECT_DIR%\.mvn\wrapper\maven-wrapper.properties
+
+rem Download Maven wrapper if needed
+if not exist "%MAVEN_JAR%" (
+    echo Maven wrapper JAR not found. Downloading it now...
+    
+    rem Create directory if needed
+    if not exist "%PROJECT_DIR%\.mvn\wrapper" (
+        mkdir "%PROJECT_DIR%\.mvn\wrapper"
+    )
+    
+    rem Download with PowerShell
+    powershell -Command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object Net.WebClient).DownloadFile('%MAVEN_URL%', '%MAVEN_JAR%') }"
+    
+    if not exist "%MAVEN_JAR%" (
+        echo Failed to download Maven wrapper! Check your internet connection.
+        exit /b 1
+    )
 )
 
-rem Download wrapper if missing
-if not exist %WRAPPER_JAR% (
-    powershell -Command "&{"^
-        "$webclient = new-object System.Net.WebClient;"^
-        "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;"^
-        "$webclient.DownloadFile('%DOWNLOAD_URL%', '%WRAPPER_JAR%')"^
-        "}"
+rem Create default properties file if missing
+if not exist "%MAVEN_PROPS%" (
+    echo distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/%MAVEN_VERSION%/apache-maven-%MAVEN_VERSION%-bin.zip > "%MAVEN_PROPS%"
 )
 
-rem Execute Maven with proper parameters
-%MAVEN_JAVA_EXE% ^
-  %JVM_CONFIG_MAVEN_PROPS% ^
-  %MAVEN_OPTS% ^
-  -classpath %WRAPPER_JAR% ^
-  "-Dmaven.multiModuleProjectDirectory=%MAVEN_PROJECTBASEDIR%" ^
-  %WRAPPER_LAUNCHER% %*
-if ERRORLEVEL 1 goto error
-goto end
+rem Run Maven
+"%JAVA_HOME%\bin\java" -Dmaven.multiModuleProjectDirectory="%PROJECT_DIR%" -jar "%MAVEN_JAR%" %*
 
-:error
-set ERROR_CODE=1
-
-:end
-endlocal & exit /b %ERROR_CODE%
+exit /b %ERRORLEVEL%
