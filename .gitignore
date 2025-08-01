@@ -99,3 +99,7 @@ task_outputs/*
 !Dockerfile
 !docker-compose.yml
 !docker-entrypoint.sh
+# Additional exclusions
+dependency-reduced-pom.xml
+*.bak
+natty-logging.properties
