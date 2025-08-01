@@ -1,0 +1,7 @@
+{
+  "smtpHost": "your-smtp-server.com",
+  "smtpPort": 587,
+  "smtpUsername": "your-username@example.com",
+  "smtpPassword": "your-password-here",
+  "fromAddress": "notifications@example.com"
+}

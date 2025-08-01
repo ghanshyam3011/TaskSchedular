@@ -103,3 +103,6 @@ task_outputs/*
 dependency-reduced-pom.xml
 *.bak
 natty-logging.properties
+
+# Security - exclude email config with credentials
+config/email-config.json

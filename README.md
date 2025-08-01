@@ -173,6 +173,25 @@ Get-Service -Name NeuroTaskScheduler
 - **Auto-suggestions**: Smart command completion as you type
 - **Custom Commands**: Create aliases for frequently used commands
 
+## ✉️ Email Configuration
+
+To enable email notifications:
+
+1. Copy `config/email-config-template.json` to `config/email-config.json`
+2. Edit `config/email-config.json` with your SMTP server details:
+   ```json
+   {
+     "smtpHost": "your-smtp-server.com",
+     "smtpPort": 587,
+     "smtpUsername": "your-username@example.com",
+     "smtpPassword": "your-password-here",
+     "fromAddress": "notifications@example.com"
+   }
+   ```
+3. Run `email-notification your@email.com` to set your notification email
+
+**Note:** `email-config.json` is excluded from version control for security reasons.
+
 ##  Contact
 
 Feel free to open issues on GitHub for bugs, feature requests, or questions.
