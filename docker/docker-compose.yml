@@ -5,9 +5,7 @@ services:
     build: .
     container_name: neurotask
     volumes:
-      # Mount task outputs to host for persistence
       - ./task_outputs:/app/task_outputs
-      # Mount configuration files for easy editing
       - ./tasks.json:/app/tasks.json
       - ./email-config.json:/app/email-config.json
       - ./config.json:/app/config.json
