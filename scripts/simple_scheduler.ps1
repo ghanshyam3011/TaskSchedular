@@ -1,41 +1,38 @@
-# NeuroTask Scheduler Background Service
-# This script periodically checks for tasks that need to be executed
-# Run this directly for testing or use NSSM to install as a Windows service
+# Background task checker service
+# Runs scheduled tasks when application is not open
 
 $ErrorActionPreference = "Continue"
-$LogFile = Join-Path $PSScriptRoot "scheduler_log.txt"
-$TaskCheckerBat = Join-Path $PSScriptRoot "run_task_checker.bat"
+$LogFile = Join-Path $PSScriptRoot "..\scheduler_log.txt"
+$TaskCheckerBat = Join-Path $PSScriptRoot "..\run_task_checker.bat"
 
-# Create log message with timestamp
+# Log with timestamp
 function Write-Log {
-    param (
-        [string]$Message
-    )
+    param ([string]$Message)
     $timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
     "$timestamp - $Message" | Out-File -FilePath $LogFile -Append
 }
 
-# Log startup
-Write-Log "NeuroTask background service starting..."
-Write-Log "Working directory: $PSScriptRoot"
+# Init
+Write-Log "Background service starting"
+Write-Log "Directory: $PSScriptRoot"
 
-# Main loop
+# Task checking loop
 try {
     while ($true) {
         $currentTime = Get-Date
-        Write-Log "Checking for tasks at $($currentTime.ToString("HH:mm:ss"))..."
+        Write-Log "Checking tasks at $($currentTime.ToString("HH:mm:ss"))"
         
-        # Run the task checker
+        # Run checker
         try {
             $process = Start-Process -FilePath $TaskCheckerBat -NoNewWindow -Wait -PassThru
             if ($process.ExitCode -ne 0) {
-                Write-Log "Task checker exited with code $($process.ExitCode)"
+                Write-Log "Task checker exit code: $($process.ExitCode)"
             }
         } catch {
-            Write-Log "Error running task checker: $_"
+            Write-Log "Error: $_"
         }
         
-        # Wait for next check (60 seconds)
+        # Wait 30 seconds before next check
         Start-Sleep -Seconds 30
     }
 } catch {
