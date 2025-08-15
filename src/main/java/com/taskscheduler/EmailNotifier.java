@@ -24,10 +24,8 @@ public class EmailNotifier {
     private static String SMTP_PASSWORD;
     
     static {
-        // Try to load from email-config.json first
         loadEmailConfig();
         
-        // Fall back to environment variables if config file loading failed
         if (SMTP_USERNAME == null || SMTP_USERNAME.isEmpty()) {
             SMTP_USERNAME = System.getenv("EMAIL_USERNAME");
         }
@@ -36,13 +34,9 @@ public class EmailNotifier {
         }
     }
     
-    /**
-     * Loads email configuration from email-config.json file
-     */
     private static void loadEmailConfig() {
         File configFile = new File("email-config.json");
         if (!configFile.exists()) {
-            // Email config file not found - will try environment variables
             return;
         }
 
@@ -54,10 +48,8 @@ public class EmailNotifier {
             SMTP_PORT = smtp.get("port").getAsString();
             SMTP_USERNAME = smtp.get("username").getAsString();
             SMTP_PASSWORD = smtp.get("password").getAsString();
-            
-            // Email configuration loaded successfully (silent)
         } catch (Exception e) {
-            // Email configuration error - will try environment variables
+            // fall back to env vars
         }
     }
 

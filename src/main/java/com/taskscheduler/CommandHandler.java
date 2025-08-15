@@ -28,7 +28,9 @@ public class CommandHandler {
     private final CommandLogger commandLogger;
     private final CommandPatternAnalyzer patternAnalyzer;
     private final LineReader reader;
-    private final NLPProcessor nlpProcessor;    private static final DateTimeFormatter[] DATE_FORMATTERS = {
+    private final NLPProcessor nlpProcessor;    
+    
+    private static final DateTimeFormatter[] DATE_FORMATTERS = {
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
         DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"),
         DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"),

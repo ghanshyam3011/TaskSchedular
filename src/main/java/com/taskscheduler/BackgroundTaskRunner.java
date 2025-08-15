@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Handles execution of tasks in background mode
- * This class is used when the application is launched with --check-tasks parameter
- */
+// handles execution of tasks in background mode
 public class BackgroundTaskRunner {
     private static final Logger LOGGER = Logger.getLogger(BackgroundTaskRunner.class.getName());
     private final TaskManager taskManager;
@@ -22,10 +19,8 @@ public class BackgroundTaskRunner {
         this.scheduler = QuartzScheduler.getInstance(); // Fixed: Use getInstance() instead of constructor
     }
     
-    /**
-     * Checks for due tasks and executes them
-     * @return The number of tasks executed
-     */    public int checkAndExecuteTasks() {
+    // checks for due tasks and executes them
+    public int checkAndExecuteTasks() {
         List<Task> tasks = taskManager.getTasks();
         int executedTasks = 0;
         LocalDateTime now = LocalDateTime.now();
@@ -84,10 +79,8 @@ public class BackgroundTaskRunner {
         return executedTasks;
     }
     
-    /**
-     * Executes a task directly instead of using the Quartz job executor
-     * @param task The task to execute
-     */    private void executeTask(Task task) {
+    // executes a task directly
+    private void executeTask(Task task) {
         try {
             // Create output directory if it doesn't exist
             File outputDir = new File(OUTPUT_DIR);

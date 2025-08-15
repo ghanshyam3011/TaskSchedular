@@ -1,22 +1,16 @@
 package com.taskscheduler.nlp;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.logging.*;
+import java.util.regex.*;
 
 import opennlp.tools.tokenize.SimpleTokenizer;
 import opennlp.tools.tokenize.Tokenizer;
 
-/**
- * Utility class for detecting command intents from natural language input.
- */
 public class IntentDetector {
     private static final Logger logger = Logger.getLogger(IntentDetector.class.getName());
     private final Tokenizer tokenizer;
-      // Intent types
+    
     public static final String INTENT_ADD = "add";
     public static final String INTENT_LIST = "list";
     public static final String INTENT_COMPLETE = "complete";
@@ -25,18 +19,16 @@ public class IntentDetector {
     public static final String INTENT_CLEAR = "clear";
     public static final String INTENT_UNKNOWN = "unknown";
     
-    // Keywords for email notifications
     private static final String[] EMAIL_KEYWORDS = {
         "email", "mail", "notify", "notification", "remind", "reminder", "alert", "message"
     };
     
-    // Keywords associated with each intent
     private final Map<String, List<String>> intentKeywords;
     
     public IntentDetector() {
         this.tokenizer = SimpleTokenizer.INSTANCE;
         this.intentKeywords = new HashMap<>();
-          // Initialize intent keywords
+        
         intentKeywords.put(INTENT_ADD, Arrays.asList(
             "add", "create", "schedule", "remind", "set", "new", "make", "task", "remember", "appointment",
             "book", "plan", "do", "work", "meeting", "call", "email", "urgent", "critical", "important"
@@ -49,7 +41,8 @@ public class IntentDetector {
         intentKeywords.put(INTENT_COMPLETE, Arrays.asList(
             "complete", "done", "finish", "mark", "completed", "finished", "check", "tick"
         ));
-          intentKeywords.put(INTENT_DELETE, Arrays.asList(
+        
+        intentKeywords.put(INTENT_DELETE, Arrays.asList(
             "delete", "remove", "cancel", "drop"
         ));
         
@@ -62,22 +55,14 @@ public class IntentDetector {
         ));
     }
     
-    /**
-     * Detects the command intent from a natural language input.
-     * 
-     * @param input The natural language input
-     * @return The detected intent (one of the INTENT_* constants)
-     */
     public String detectIntent(String input) {
         if (input == null || input.trim().isEmpty()) {
             return INTENT_UNKNOWN;
         }
         
-        // Lowercase and tokenize the input
         String normalizedInput = input.toLowerCase().trim();
         String[] tokens = tokenizer.tokenize(normalizedInput);
         
-        // Check for explicit commands first (highest confidence)
         if (normalizedInput.startsWith("add ") || 
             normalizedInput.startsWith("create ") ||
             normalizedInput.startsWith("remind ")) {
@@ -94,7 +79,8 @@ public class IntentDetector {
             normalizedInput.startsWith("done ")) {
             return INTENT_COMPLETE;
         }
-          if (normalizedInput.startsWith("delete ") || 
+        
+        if (normalizedInput.startsWith("delete ") || 
             normalizedInput.startsWith("remove ")) {
             return INTENT_DELETE;
         }
@@ -111,9 +97,9 @@ public class IntentDetector {
             return INTENT_HELP;
         }
         
-        // For less explicit inputs, score each intent based on keyword matches
         Map<String, Integer> intentScores = new HashMap<>();
-          for (Map.Entry<String, List<String>> entry : intentKeywords.entrySet()) {
+        
+        for (Map.Entry<String, List<String>> entry : intentKeywords.entrySet()) {
             String intent = entry.getKey();
             List<String> keywords = entry.getValue();
             
@@ -124,19 +110,16 @@ public class IntentDetector {
                 }
             }
             
-            // Boost score for task creation if priority keywords are detected
             if (intent.equals(INTENT_ADD) && containsPriorityKeywords(normalizedInput)) {
-                score += 2; // Strong boost for priority-related inputs
+                score += 2;
             }
             
-            // Boost score for task creation if time expressions are present
             if (intent.equals(INTENT_ADD) && containsTimeExpression(normalizedInput)) {
-                score += 1; // Moderate boost for time-related inputs
+                score += 1;
             }
             
             intentScores.put(intent, score);
         }
-          // Find the intent with the highest score
         String bestIntent = INTENT_UNKNOWN;
         int highestScore = 0;
         
@@ -147,7 +130,6 @@ public class IntentDetector {
             }
         }
         
-        // If we have a high enough confidence, return the detected intent
         if (highestScore > 0) {
             final String finalIntent = bestIntent;
             final int finalScore = highestScore;
@@ -155,22 +137,15 @@ public class IntentDetector {
             return bestIntent;
         }
         
-        // If no clear intent is detected, try to infer from sentence structure
         if (containsTimeExpression(normalizedInput) && 
             !normalizedInput.contains("list") && 
             !normalizedInput.contains("show")) {
-            // Sentences with time expressions are likely to be task creation
             return INTENT_ADD;
         }
         
         return INTENT_UNKNOWN;
     }
-    
-    /**
-     * Checks if the input contains a time expression (simple heuristic approach).
-     */
     private boolean containsTimeExpression(String input) {
-        // Check for common time-related words
         String[] timeKeywords = {"today", "tomorrow", "next", "on", "at", "by", "before", "after", "pm", "am"};
         
         for (String keyword : timeKeywords) {
@@ -179,7 +154,6 @@ public class IntentDetector {
             }
         }
         
-        // Check for days of week
         String[] daysOfWeek = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"};
         for (String day : daysOfWeek) {
             if (input.contains(day)) {
@@ -187,18 +161,9 @@ public class IntentDetector {
             }
         }
         
-        // Check for date patterns (simple regex patterns)
-        String datePattern = "\\d{1,2}[/-]\\d{1,2}"; // Matches patterns like 6/4, 06/04, etc.
+        String datePattern = "\\d{1,2}[/-]\\d{1,2}";
         return Pattern.compile(datePattern).matcher(input).find();
     }
-    
-    /**
-     * Extracts the main task description from natural language input after intent is detected.
-     * 
-     * @param input The natural language input
-     * @param intent The detected intent
-     * @return The task description
-     */
     public String extractTaskDescription(String input, String intent) {
         if (input == null || input.trim().isEmpty()) {
             return "";
