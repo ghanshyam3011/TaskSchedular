@@ -1,16 +1,11 @@
 package com.taskscheduler.ui;
 
-import com.vdurmont.emoji.EmojiParser;
-import org.beryx.textio.TextIO;
-import org.beryx.textio.TextIoFactory;
-import org.beryx.textio.TextTerminal;
+import com.vdurmont.emoji.*;
+import org.beryx.textio.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
+import java.time.*;
+import java.time.format.*;
+import java.util.*;
 
 /**
  * Enhanced interactive UI components using Text-IO library

@@ -1,10 +1,8 @@
 package com.taskscheduler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ConfigManager {
     private static final String CONFIG_FILE = "config.json";

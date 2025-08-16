@@ -1,7 +1,7 @@
 package com.taskscheduler;
 
-import java.io.File;
-import java.util.logging.Logger;
+import java.io.*;
+import java.util.logging.*;
 
 /**
  * Helper class to detect execution environment and adapt behavior accordingly

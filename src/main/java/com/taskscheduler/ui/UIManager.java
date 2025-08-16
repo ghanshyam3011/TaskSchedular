@@ -1,9 +1,9 @@
 package com.taskscheduler.ui;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.time.*;
+import java.time.format.*;
+import java.time.temporal.*;
+import java.util.*;
 
 /**
  * Enhanced UI Manager for beautiful task display and interaction
@@ -253,7 +253,7 @@ public class UIManager {
 
     /**
      * Ensures proper spacing after command output by adding blank lines if needed.
-     * This method can be called after displaying command output.
+     * This method- can be called after displaying command output.
      */
     public static void ensureCommandSpacing() {
         System.out.println();

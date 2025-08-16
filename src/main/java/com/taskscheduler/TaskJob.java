@@ -1,17 +1,11 @@
 package com.taskscheduler;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import org.quartz.*;
+import java.util.logging.*;
+import java.io.*;
+import java.time.*;
+import java.time.format.*;
+import java.util.*;
 
 public class TaskJob implements Job {
     private static final Logger logger = Logger.getLogger(TaskJob.class.getName());
