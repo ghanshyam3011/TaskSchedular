@@ -1,20 +1,14 @@
 package com.taskscheduler;
 
-import java.io.*;
-import java.util.logging.*;
+import java.io.File;
+import java.util.logging.Logger;
 
-/**
- * Helper class to detect execution environment and adapt behavior accordingly
- */
+// Detects whether we're running in Docker or Windows
 public class EnvironmentDetector {
     private static final Logger logger = Logger.getLogger(EnvironmentDetector.class.getName());
     private static Boolean isDockerEnvironment = null;
     
-    /**
-     * Detects if the application is running inside a Docker container
-     * 
-     * @return true if running in Docker, false otherwise
-     */
+    // Checks if app is running in Docker (returns boolean)
     public static boolean isRunningInDocker() {
         if (isDockerEnvironment != null) {
             return isDockerEnvironment;
@@ -48,11 +42,7 @@ public class EnvironmentDetector {
         return false;
     }
     
-    /**
-     * Gets the appropriate command to execute shell commands based on the environment
-     * 
-     * @return array of command and parameter to execute shell commands
-     */
+    // Returns appropriate shell executor (bash for Docker, cmd for Windows)
     public static String[] getShellExecutor() {
         if (isRunningInDocker()) {
             logger.info("Using bash for command execution in Docker");

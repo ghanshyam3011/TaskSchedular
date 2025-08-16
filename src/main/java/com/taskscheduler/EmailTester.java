@@ -1,10 +1,9 @@
 package com.taskscheduler;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
-/**
- * Utility class for testing email notifications
- */
+// Tests email notifications functionality
 public class EmailTester {
     
     public static void main(String[] args) {
@@ -40,9 +39,7 @@ public class EmailTester {
         System.out.println("=== EMAIL NOTIFICATION TEST COMPLETE ===");
     }
     
-    /**
-     * Test method that can be called from other classes
-     */
+    // Quick test method for email functionality
     public static void testEmailNotification() {
         String userEmail = ConfigManager.getEmail();
         if (userEmail != null && !userEmail.trim().isEmpty()) {

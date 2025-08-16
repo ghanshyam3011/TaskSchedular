@@ -1,23 +1,24 @@
 package com.taskscheduler.ui;
 
-import com.vdurmont.emoji.*;
-import org.beryx.textio.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 
-import java.time.*;
-import java.time.format.*;
-import java.util.*;
+import org.beryx.textio.TextIO;
+import org.beryx.textio.TextIoFactory;
+import org.beryx.textio.TextTerminal;
 
-/**
- * Enhanced interactive UI components using Text-IO library
- * for better user interaction and input handling
- */
+import com.vdurmont.emoji.EmojiParser;
+
+// Interactive UI with Text-IO for better UX
 public class InteractiveUI {
     private static final TextIO textIO = TextIoFactory.getTextIO();
     private static final TextTerminal<?> terminal = textIO.getTextTerminal();
     
-    /**
-     * Display an enhanced welcome message with animation
-     */
+    // Shows welcome animation when starting the app
     public static void showWelcome() {
         clearScreen();
         
@@ -71,9 +72,7 @@ public class InteractiveUI {
         System.out.println("\n" + withEmoji(":bulb: Type 'help' for available commands or 'menu' for interactive mode"));
     }
     
-    /**
-     * Clear the screen
-     */
+    // Clears terminal screen for better UI
     public static void clearScreen() {
         try {
             String os = System.getProperty("os.name").toLowerCase();
@@ -91,17 +90,12 @@ public class InteractiveUI {
         }
     }
     
-    /**
-     * Parse emojis in text
-     */
+    // Converts emoji shortcodes to unicode
     public static String withEmoji(String text) {
         return EmojiParser.parseToUnicode(text);
     }
     
-    /**
-     * Show an interactive menu for the user
-     * @return The selected option
-     */
+    // Displays main menu and returns selected option
     public static String showMainMenu() {
         clearScreen();
         terminal.println(Colors.CYAN_BOLD + "┌─ " + withEmoji(":rocket: Task Scheduler") + " ─┐" + Colors.RESET);
@@ -123,10 +117,7 @@ public class InteractiveUI {
                 .read("\nSelect an option");
     }
     
-    /**
-     * Create a new task interactively
-     * @return String array with [title, due date, priority, tags]
-     */
+    // Guides user through task creation, returns [title, due date, priority, tags]
     public static String[] createNewTaskInteractive() {
         clearScreen();
         terminal.println(Colors.CYAN_BOLD + "┌─ " + withEmoji(":pencil: Create New Task") + " ─┐" + Colors.RESET);
@@ -177,18 +168,14 @@ public class InteractiveUI {
         return result;
     }
     
-    /**
-     * Show a confirmation dialog
-     */
+    // Shows yes/no dialog with the given message
     public static boolean confirm(String message) {
         return textIO.newBooleanInputReader()
                 .withDefaultValue(false)
                 .read(withEmoji(message));
     }
     
-    /**
-     * Show a notification
-     */
+    // Displays a notification message with appropriate styling
     public static void notify(String message, boolean isError) {
         String prefix = isError ? withEmoji(":x: ") : withEmoji(":white_check_mark: ");
         String color = isError ? Colors.RED_BOLD : Colors.GREEN_BOLD;

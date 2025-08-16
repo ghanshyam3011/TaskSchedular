@@ -1,13 +1,11 @@
 package com.taskscheduler.ui;
 
-import java.time.*;
-import java.time.format.*;
-import java.time.temporal.*;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
-/**
- * Enhanced UI Manager for beautiful task display and interaction
- */
+// Manages UI elements and display formatting
 public class UIManager {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     
@@ -251,10 +249,7 @@ public class UIManager {
         System.out.println();
     }
 
-    /**
-     * Ensures proper spacing after command output by adding blank lines if needed.
-     * This method- can be called after displaying command output.
-     */
+    // Adds blank lines after command output for better readability
     public static void ensureCommandSpacing() {
         System.out.println();
     }
